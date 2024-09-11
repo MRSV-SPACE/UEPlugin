@@ -1,6 +1,6 @@
 # main/mrsv-unreal-plugin
 
-
+This is an Unreal Engine Plugin used for artist to configure their environment for MRSV*Space. To use it, pull the content of the repository into the "Plugins" folder of your project. 
 
 ## Getting Started
 
@@ -11,16 +11,11 @@ SSH clone URL: ssh://git@git.jetbrains.space/hello-xlab/main/mrsv-unreal-plugin.
 HTTPS clone URL: https://git.jetbrains.space/hello-xlab/main/mrsv-unreal-plugin.git
 
 
-
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ## Prerequisites
 
-What things you need to install the software and how to install them.
-
-```
-Examples
-```
+- Unreal Engine (5.3+)
 
 ## Deployment
 
