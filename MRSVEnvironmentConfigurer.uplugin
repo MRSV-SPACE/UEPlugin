@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "MRSVEnvironmentConfigurer",
+	"Description": "A plugin for MRSV artists to configure their environment for the MRSV*Space platform",
+	"Category": "Other",
+	"CreatedBy": "Hello xLab KK",
+	"CreatedByURL": "https://www.hello-xlab.com/",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "MRSVEnvironmentConfigurer",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		}
+	]
+}
