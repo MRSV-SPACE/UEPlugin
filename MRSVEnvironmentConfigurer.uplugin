@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "MRSVEnvironmentConfigurer",
+	"FriendlyName": "MRSV Artist Plugin",
 	"Description": "A plugin for MRSV artists to configure their environment for the MRSV*Space platform",
 	"Category": "Other",
 	"CreatedBy": "Hello xLab KK",
@@ -10,7 +10,7 @@
 	"DocsURL": "",
 	"MarketplaceURL": "",
 	"SupportURL": "",
-	"CanContainContent": false,
+	"CanContainContent": true,
 	"IsBetaVersion": false,
 	"IsExperimentalVersion": false,
 	"Installed": false,
@@ -19,6 +19,12 @@
 			"Name": "MRSVEnvironmentConfigurer",
 			"Type": "Editor",
 			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "SocketIOClient",
+			"Enabled": true
 		}
 	]
 }

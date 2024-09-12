@@ -103,7 +103,7 @@ void SConfigurationFormWidget::Construct(const FArguments& InArgs)
 FReply SConfigurationFormWidget::AddPropertyConfigurationForm() const
 {
 	PropertyConfigFormContainer->AddSlot()
-		.Padding(10.0f)
+		.Padding(0, 0.0f, 0.0f, 5.0f)
 		[
 			SNew(SEnvironmentPropertyConfigWidget)
 			.ParentBox(PropertyConfigFormContainer)
@@ -114,12 +114,32 @@ FReply SConfigurationFormWidget::AddPropertyConfigurationForm() const
 FReply SConfigurationFormWidget::SaveConfiguration() const
 {
 	UE_LOG(LogTemp, Log, TEXT("Saving environment configuration"));
-	/*TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
-	JsonObject->SetStringField("name", "test name");
+	// Create a new JSON object
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+
+	// Set values
+	JsonObject->SetStringField("name", "Beautiful environment 1");
+	JsonObject->SetStringField("artist", "Artist XY");
+
+	// Convert the JSON object to a string
 	FString OutputString;
 	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutputString);
-	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);*/
+    
+	if (FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer))
+	{
+		// The path to the JSON file (relative to the project's Content directory)
+		FString FilePath = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("MRSV/metadata.json"));
 
+		// Save the JSON string to a file
+		if (FFileHelper::SaveStringToFile(OutputString, *FilePath))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("JSON file saved successfully."));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Failed to save JSON file."));
+		}
+	}
 	// Save `OutputString` to a file
 	return FReply::Handled();
 }
