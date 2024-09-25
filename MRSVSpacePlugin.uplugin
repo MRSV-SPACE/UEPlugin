@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "MRSV Artist Plugin",
+	"FriendlyName": "MRSV*Space Plugin",
 	"Description": "A plugin for MRSV artists to configure their environment for the MRSV*Space platform",
 	"Category": "Other",
 	"CreatedBy": "Hello xLab KK",
@@ -16,7 +16,7 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "MRSVEnvironmentConfigurer",
+			"Name": "MRSVSpacePlugin",
 			"Type": "Editor",
 			"LoadingPhase": "Default"
 		}

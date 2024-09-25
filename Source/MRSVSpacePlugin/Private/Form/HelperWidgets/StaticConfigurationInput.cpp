@@ -1,4 +1,5 @@
-#include "ConfigurationForm/StaticConfigurationInput.h"
+
+#include "Form/HelperWidgets/StaticConfigurationInput.h"
 
 void SStaticConfigurationInput::Construct(const FArguments& InArgs)
 {
@@ -8,7 +9,7 @@ void SStaticConfigurationInput::Construct(const FArguments& InArgs)
 	[
 		SNew( SHorizontalBox )
 		+ SHorizontalBox::Slot()
-		.VAlign(VAlign_Center)
+		.VAlign(VAlign_Top)
 		.FillWidth(1)
 		[
 			SNew( STextBlock )

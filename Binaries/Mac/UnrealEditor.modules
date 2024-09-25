@@ -2,6 +2,6 @@
 	"BuildId": "33043543",
 	"Modules": 
 	{
-		"MRSVEnvironmentConfigurer": "UnrealEditor-MRSVEnvironmentConfigurer.dylib"
+		"MRSVSpacePlugin": "UnrealEditor-MRSVSpacePlugin.dylib"
 	}
 }

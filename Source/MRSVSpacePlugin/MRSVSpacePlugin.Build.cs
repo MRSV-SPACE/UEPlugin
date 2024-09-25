@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class MRSVEnvironmentConfigurer : ModuleRules
+public class MRSVSpacePlugin : ModuleRules
 {
-	public MRSVEnvironmentConfigurer(ReadOnlyTargetRules Target) : base(Target)
+	public MRSVSpacePlugin(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -25,7 +25,7 @@ public class MRSVEnvironmentConfigurer : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "SlateCore", "PropertyEditor", "Json", "JsonUtilities"
+				"Core", "SlateCore", "PropertyEditor", "Json", "JsonUtilities", "ToolWidgets", "MediaAssets"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

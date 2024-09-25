@@ -8,7 +8,7 @@
 class FToolBarBuilder;
 class FMenuBuilder;
 
-class FMRSVEnvironmentConfigurerModule : public IModuleInterface
+class FMRSVSpacePluginModule : public IModuleInterface
 {
 public:
 
