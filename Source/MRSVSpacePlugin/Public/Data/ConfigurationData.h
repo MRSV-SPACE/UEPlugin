@@ -90,6 +90,7 @@ struct FControlAction
 	FControlAction()
 		: Type() {}
 };
+typedef struct FControl FControl;
 
 USTRUCT()
 struct FControlDetails
@@ -107,7 +108,7 @@ struct FControlDetails
 
 	// Never expose as UPROPERTY, as Unreal can't handle pointer fields in USTRUCT
 	// Needs to be converted manually to JSON
-	TArray<FControl*> Options;
+	TArray<FControl> Options;
 
 	UPROPERTY(EditAnywhere)
 	FString Selected;
@@ -120,7 +121,7 @@ struct FControlDetails
 		: CurrentValue(InCurrentValue), Min(InMin), Max(InMax), Toggled() {}
 
 	// Constructor for Expanded Options
-	FControlDetails(const TArray<FControl*>& InOptions, const FString& InSelected)
+	FControlDetails(const TArray<FControl>& InOptions, const FString& InSelected)
 		: CurrentValue(), Min(), Max(), Options(InOptions), Selected(InSelected), Toggled() {}
 
 	// Constructor for Joystick

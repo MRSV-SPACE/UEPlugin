@@ -24,8 +24,6 @@ void ConfigurationDataHandler::Load()
 			auto ControlListLoad = JsonObject->GetArrayField(FString("controls"));
 			for(int i = 0; i < ControlListLoad.Num(); i++)
 			{
-				//Get corresponding control in metadata
-				FControl Control = EnvironmentData->Controls[i];
 				//Loop options
 				for(auto OptionLoad : ControlListLoad[i]->AsObject()->GetObjectField(FString("details"))->GetArrayField(FString("options")))
 				{
@@ -34,7 +32,7 @@ void ConfigurationDataHandler::Load()
 					if(FJsonObjectConverter::JsonObjectToUStruct(OptionLoad->AsObject().ToSharedRef(), Option, 0, 0))
 					{
 						//On succesfull load, add option to option array
-						Control.Details.Options.Add(Option);
+						EnvironmentData->Controls[i].Details.Options.Add(*Option);
 					} else
 					{
 						UE_LOG(LogTemp, Error, TEXT("Loading option to as struct failed"));
@@ -69,7 +67,7 @@ void ConfigurationDataHandler::Save()
 				//Create the Json Option Object
 				TSharedPtr<FJsonObject> OptionJsonObj = MakeShareable(new FJsonObject());
 				//Load Struct to Json Object
-				FJsonObjectConverter::UStructToJsonObject(FControl::StaticStruct(), Option, OptionJsonObj.ToSharedRef(), 0, 0);
+				FJsonObjectConverter::UStructToJsonObject(FControl::StaticStruct(), &Option, OptionJsonObj.ToSharedRef(), 0, 0);
 				//Add Option Json Object to Array
 				OptionsArr.Add(MakeShareable(new FJsonValueObject(OptionJsonObj)));
 			}

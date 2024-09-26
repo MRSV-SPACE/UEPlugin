@@ -16,11 +16,7 @@ struct FDropdownItem
 template<typename T>
 class SSearchableDropdownWidget : public SCompoundWidget
 {
-	DECLARE_DELEGATE_OneParam(
-		FOnSelectionChanged,
-		/** param: The newly selected value */
-		TSharedPtr<T>
-	)
+	DECLARE_DELEGATE_OneParam(FOnSelectionChanged, TSharedPtr<T>)
 	
 	SLATE_BEGIN_ARGS(SSearchableDropdownWidget)
 		: _HintText("Select...") {}
@@ -42,13 +38,13 @@ class SSearchableDropdownWidget : public SCompoundWidget
 		ChildSlot
 		[
 			SAssignNew(ComboBox, SSearchableComboBox)
-			.HasDownArrow(true)
+			.ContentPadding(2.0f)
 			.IsEnabled_Lambda([this]()
 			{
 				return this->IsEnabled();
 			})
 			.OptionsSource(&AvailableItems) // Source for the dropdown
-			.OnGenerateWidget(this, &SSearchableDropdownWidget::GenerateDropdownItem)
+			.OnGenerateWidget_Static(GenerateDropdownItem)
 			.OnSelectionChanged(this, &SSearchableDropdownWidget::OnSelectionChanged_Internal) // Handle selection
 			[
 				SNew(STextBlock)
@@ -87,7 +83,7 @@ private:
 	TArray<TSharedPtr<FString>> AvailableItems;
 	TMap<TSharedPtr<FString>, TSharedPtr<T>> ReverseLookupMap;
 	
-	TSharedRef<SWidget> GenerateDropdownItem(TSharedPtr<FString> InItem)
+	static TSharedRef<SWidget> GenerateDropdownItem(TSharedPtr<FString> InItem)
 	{
 		return SNew(STextBlock)
 			.Text(FText::FromString(*InItem));
@@ -100,7 +96,6 @@ private:
 		//Not execute OnSelectionChange if it is directly from code
 		if(SelectInfo != ESelectInfo::Type::Direct)
 		{
-			UE_LOG(LogTemp, Display, TEXT("Change to %s"), *UEnum::GetValueAsString(SelectInfo));
 			if(!OnSelectionChanged.ExecuteIfBound(*ReverseLookupMap.Find(ProposedSelection)))
 			{
 				UE_LOG(LogTemp, Warning, TEXT("No OnSelectionChange Event bound to Searchable Dropdown"));

@@ -9,9 +9,8 @@ public:
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
-
-	FReply AddPropertyConfigurationForm() const;
 private:
 	TSharedPtr<ConfigurationDataHandler> DataHandler;
-	TSharedPtr<SScrollBox> PropertyConfigFormContainer;
+
+	FSlateFontInfo DefaultFont = FCoreStyle::GetDefaultFontStyle("Regular", 10);
 };

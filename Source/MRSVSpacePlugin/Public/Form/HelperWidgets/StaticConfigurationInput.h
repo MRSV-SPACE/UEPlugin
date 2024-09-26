@@ -11,8 +11,6 @@ public:
 	void Construct(const FArguments& InArgs);
 
 private:
-	FText LabelText;
-
 	//Label font
 	FSlateFontInfo LabelFont = FCoreStyle::GetDefaultFontStyle("Regular", 10);
 };

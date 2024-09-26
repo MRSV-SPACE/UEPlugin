@@ -3,23 +3,22 @@
 
 void SStaticConfigurationInput::Construct(const FArguments& InArgs)
 {
-	LabelText = InArgs._LabelText;
 	ChildSlot
-	.Padding(0.0f, 0.0f, 0.0f, 10.0f)
+	.Padding(0.0f, 0.0f, 0.0f, 5.0f)
 	[
 		SNew( SHorizontalBox )
 		+ SHorizontalBox::Slot()
 		.VAlign(VAlign_Top)
+		.HAlign(HAlign_Left)
 		.FillWidth(1)
 		[
 			SNew( STextBlock )
-			.Text( LabelText )
+			.Text( InArgs._LabelText )
 			.Font( LabelFont )
 		]
 		+ SHorizontalBox::Slot()
-		.VAlign(VAlign_Center)
+		.VAlign(VAlign_Top)
 		.FillWidth(5)
-		.Padding(5.0f, 0.0f)
 		[
 			InArgs._Content.Widget
 		]

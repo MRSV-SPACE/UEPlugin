@@ -1,6 +1,6 @@
 #include "Form/ConfigurationWidget.h"
-#include "Components/MRSVControlsComponent.h"
-#include "Form/PropertyConfigurationWidget.h"
+#include "Form/ControlConfigurationWidget.h"
+#include "Form/ControlListFormWidget.h"
 #include "Form/HelperWidgets/StaticConfigurationInput.h"
 #include "Widgets/Text/SMultiLineEditableText.h"
 
@@ -60,6 +60,7 @@ void SConfigurationWidget::Construct(const FArguments& InArgs)
 					.LabelText(FText::FromString("Environment Name"))
 					[
 						SNew( SEditableText )
+						.Font(DefaultFont)
 						.HintText(FText::FromString("Environment Name..."))
 						.Text(FText::FromString(DataHandler->GetEnvironment()->Name))
 						.OnTextChanged_Lambda([this](const FText& NewText)
@@ -82,6 +83,7 @@ void SConfigurationWidget::Construct(const FArguments& InArgs)
 							SNew( SEditableText )
 							.HintText(FText::FromString("Version Tag..."))
 							.Text(FText::FromString(DataHandler->GetEnvironment()->Version.Tag))
+							.Font(DefaultFont)
 							.OnTextChanged_Lambda([this](const FText& NewText)
 							{
 								DataHandler->GetEnvironment()->Version.Tag = NewText.ToString();
@@ -93,6 +95,7 @@ void SConfigurationWidget::Construct(const FArguments& InArgs)
 						[
 							SNew( SMultiLineEditableText )
 							.AutoWrapText(true)
+							.Font(DefaultFont)
 							.HintText(FText::FromString("Version Revision..."))
 							.Text(FText::FromString(DataHandler->GetEnvironment()->Version.Revision))
 							.OnTextChanged_Lambda([this](const FText& NewText)
@@ -103,81 +106,19 @@ void SConfigurationWidget::Construct(const FArguments& InArgs)
 					]
 				]
 			]
+			/* Configuration PopUp Buttons */
 			+ SVerticalBox::Slot()
+			.HAlign(HAlign_Left)
+			.VAlign(VAlign_Center)
 			.AutoHeight()
-			.Padding(0.0f, 0.0f, 0.0f, 5.0f)
 			[
-				SNew( SSeparator )
-			]
-			/* ENV PROPERTY DYNAMIC FORM CONTAINER */
-			+ SVerticalBox::Slot()
-			[
-				SNew(SVerticalBox)
-				/* ENV PROPERTY FORM HEADER CONTAINER */
-				+SVerticalBox::Slot()
-				.AutoHeight()
-				[
-					SNew( SHorizontalBox )
-					/* ENV PROPERTY FORM TITLE */
-					+SHorizontalBox::Slot()
-					.HAlign(HAlign_Left)
-					.VAlign(VAlign_Center)
-					.AutoWidth()
-					[
-						SNew( STextBlock )
-						.Text( FText::FromString("Environment Properties") )
-						.Font(FCoreStyle::GetDefaultFontStyle("Regular", 10))
-					]
-					/* ENV PROPERTY FORM "ADD" BUTTON */
-					+SHorizontalBox::Slot()
-					.HAlign(HAlign_Left)
-					.VAlign(VAlign_Center)
-					.Padding(5.0f, 0.0f)
-					.AutoWidth()
-					[
-						SNew( SButton )
-						.Text(FText::FromString("+"))
-						.ToolTipText(FText::FromString("Add a new property to the environment"))
-						.OnClicked_Raw(this, &SConfigurationWidget::AddPropertyConfigurationForm)
-					]
-				]
-				/* SCROLL CONTAINER FOR ENV PROPERTY FORMS */
-				+SVerticalBox::Slot()
-				.VAlign(VAlign_Top)
-				.Padding(5.0f)
-				[
-					SAssignNew( PropertyConfigFormContainer, SScrollBox )
-				]
+				SNew(SButton)
+				.Text(FText::FromString("Configure Controls"))
+				.OnClicked_Lambda([this]()
+				{
+					SControlListFormWidget::ShowAsPopup(MakeShareable(&DataHandler->GetEnvironment()->Controls), FText::FromString("Environment Controls"));
+					return FReply::Handled();
+				})
 			]
 	];
-	//Construct Property Forms from stored metadata
-	for (int32 Index = 0; Index < DataHandler->GetEnvironment()->Controls.Num(); ++Index)
-	{
-		PropertyConfigFormContainer->AddSlot()
-		.Padding(0, 0.0f, 0.0f, 5.0f)
-		[
-			SNew(SPropertyConfigurationWidget)
-			.ParentBox(PropertyConfigFormContainer)
-			//Pass ref to control data
-			.ControlDataRef(MakeShareable(&DataHandler->GetEnvironment()->Controls[Index]))
-			.DataHandler(DataHandler)
-		];
-	}
-}
-
-FReply SConfigurationWidget::AddPropertyConfigurationForm() const
-{
-	//Add slot in configuration form
-	PropertyConfigFormContainer->AddSlot()
-		.Padding(0, 0.0f, 0.0f, 5.0f)
-		[
-			SNew(SPropertyConfigurationWidget)
-			.ParentBox(PropertyConfigFormContainer)
-			//Create new control in metadata and pass ID
-			.ControlDataRef(MakeShareable(&DataHandler->GetEnvironment()->Controls.Add_GetRef(FControl())))
-			.DataHandler(DataHandler)
-		];
-	//Add available control to the environment
-	UMRSVControlsComponent::AddAvailableControl(FName("Test Config"));
-	return FReply::Handled();
 }
