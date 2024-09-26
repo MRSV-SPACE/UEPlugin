@@ -90,6 +90,9 @@ struct FControlAction
 	FControlAction()
 		: Type() {}
 };
+
+// Workaround to use self reflection without a pointer. Pointers would leed to much overhead in code
+// as all the forms are working with direct references to the metadata object to make the save and loading as easy as possible
 typedef struct FControl FControl;
 
 USTRUCT()
