@@ -16,15 +16,19 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "MRSVSpacePlugin",
+			"Name": "MRSVSpaceMetadata",
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault"
+		},
+		{
+			"Name": "MRSVSpaceComponents",
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault"
+		},
+		{
+			"Name": "MRSVSpaceEditorPlugin",
 			"Type": "Editor",
 			"LoadingPhase": "Default"
-		}
-	],
-	"Plugins": [
-		{
-			"Name": "SocketIOClient",
-			"Enabled": true
 		}
 	]
 }
