@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #include "MRSVSpaceEditorPlugin.h"
 
 #include "MRSVSpaceEditorPluginStyle.h"
@@ -8,7 +6,7 @@
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Text/STextBlock.h"
 #include "ToolMenus.h"
-#include "Form/ConfigurationWidget.h"
+#include "EnvironmentForm/EnvironmentConfigurationWidget.h"
 
 /**
  * A constant name for the Plugin
@@ -35,7 +33,7 @@ void FMRSVSpacePluginModule::StartupModule()
 		FCanExecuteAction());
 	// Register Callback which is executed after startup
 	UToolMenus::RegisterStartupCallback(
-		// As Callback register the Menu Items
+		// As Callback registers the Menu Items
 		FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FMRSVSpacePluginModule::RegisterMenus));
 	// Create the TabSpawner for the Plugin Tab
 	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(
@@ -69,7 +67,7 @@ TSharedRef<SDockTab> FMRSVSpacePluginModule::OnSpawnPluginTab(const FSpawnTabArg
 		.ContentPadding(10.0f)
 		[
 			// Content is a ConfigurationWidget
-			SNew(SConfigurationWidget)
+			SNew(SEnvironmentConfigurationWidget)
 		];
 }
 

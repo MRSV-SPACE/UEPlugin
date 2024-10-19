@@ -3,17 +3,29 @@
 #include "CoreMinimal.h"
 #include "ConfigurationData.generated.h"
 
+/**
+ * Struct for the version of an environment
+ */
 USTRUCT()
 struct FEnvironmentVersion
 {
 	GENERATED_BODY()
 
+	/**
+	 * The tag (e.g. version name) of the version
+	 */
 	UPROPERTY(EditAnywhere)
 	FString Tag;
-	
+
+	/**
+	 * The description of the version (revision text)
+	 */
 	UPROPERTY(EditAnywhere)
 	FString Revision;
 
+	/**
+	 * The date time when the version was released. 
+	 */
 	UPROPERTY(EditAnywhere)
 	FDateTime CreatedAt;
 
@@ -27,57 +39,118 @@ struct FEnvironmentVersion
 		: CreatedAt(FDateTime::UtcNow()) {}
 };
 
+/**
+ * Struct for the preset of an environment
+ */
 USTRUCT()
 struct FPreset
 {
 	GENERATED_BODY()
+
+	/**
+	 * The unique id of the preset
+	 */
+	UPROPERTY(EditAnywhere)
+	FString Id;
 	
+	/**
+	 * The name / title of the preset
+	 */
 	UPROPERTY(EditAnywhere)
 	FString Name;
 
+	/**
+	 * The stored values of the preset
+	 */
 	UPROPERTY(EditAnywhere)
-	FString Id;
+	TMap<FString, FString> Values;
 
-	bool operator==(const FPreset& Other) const;
+	FPreset(const FString& InId, const FString& InName, const TMap<FString, FString>& InValues)
+		: Id(InId), Name(InName), Values(InValues) {}
 
-	FPreset(const FString& InId, const FString& InName)
-		: Name(InName), Id(InId) {}
-
-	FPreset(const FString& InName)
-		: Name(InName), Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)) {}
+	FPreset(const FString& InName, const TMap<FString, FString>& InValues)
+		: Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)), Name(InName), Values(InValues) {}
 
 	FPreset()
-		: Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)) {}
+		: Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)), Name("") {}
+
+	/**
+	 * Defines the compare operator (compares using the ID field)
+	 */
+	bool operator==(const FPreset& Other) const;
 };
 
+/**
+ * Enum for the available control types with their DisplayName. 
+ */
 UENUM()
 enum EControlType : uint8 {
-	SLIDER_FREE_HORIZ UMETA(DisplayName = "Free Horizontal Slider"),
-	SLIDER_FREE_VERT UMETA(DisplayName = "Free Vertical Slider"),
-	SLIDER_NOTCH_HORIZ UMETA(DisplayName = "Notch Horizontal Slider"),
-	SLIDER_NOTCH_VERT UMETA(DisplayName = "Notch Vertical Slider"),
+	
+	/* Defines a free horizontal slider */
+	SLIDER_FREE_HORIZONTAL UMETA(DisplayName = "Free Horizontal Slider"),
+	
+	/* Defines a free vertical slider */
+	SLIDER_FREE_VERTICAL UMETA(DisplayName = "Free Vertical Slider"),
+
+	/* Defines a notched horizontal slider */
+	SLIDER_NOTCH_HORIZONTAL UMETA(DisplayName = "Notch Horizontal Slider"),
+
+	/* Defines a notched vertical slider */
+	SLIDER_NOTCH_VERTICAL UMETA(DisplayName = "Notch Vertical Slider"),
+	
+	/* Defines a joystick input*/
 	JOYSTICK UMETA(DisplayName = "Joystick"),
-	TOGGLE_BTN UMETA(DisplayName = "Toggle Button"),
-	TOGGLE_BTN_EXP_OPT UMETA(DisplayName = "Dropdown"),
+
+	/* Defines a on / off toggle button */
+	TOGGLE UMETA(DisplayName = "Toggle Button"),
+
+	/* Defines a container for other controls */
+	CONTAINER UMETA(DisplayName = "Container"),
+
+	/* Defines an option chooser (radio / dropdown like) */
+	CHOICE UMETA(DisplayName = "Choice Selector")
 };
 
+/**
+ * Enum for the available control action types. 
+ */
 UENUM()
 enum EControlActionType {
+
+	/* No Action defined (Only used for container control )*/
+	NONE,
+	
+	/* Defines the action updating a specific property on an actor in scene */
 	ACTOR,
-	BLUEPRINT,
+
+	/* Defines the action is implemented in blueprint */
+	BLUEPRINT
 };
 
+/**
+ * Struct for a control action. The action defines how a value change of the control is executed
+ * in Unreal Engine. 
+ */
 USTRUCT()
 struct FControlAction
 {
 	GENERATED_BODY()
 
+	/**
+	 * The action type (as byte for JSON parsing)
+	 */
 	UPROPERTY(EditAnywhere)
 	TEnumAsByte<EControlActionType> Type;
 
+	/**
+	 * The actor (PathName of actor) for the action type "actor"
+	 */
 	UPROPERTY(EditAnywhere)
 	FString Actor;
-	
+
+	/**
+	 * The property name for the action type "actor"
+	 */
 	UPROPERTY(EditAnywhere)
 	FString Property;
 
@@ -88,118 +161,193 @@ struct FControlAction
 		: Type(InType) {}
 
 	FControlAction()
-		: Type() {}
+		// Set actor as default action type
+		: Type(ACTOR) {}
 };
 
 // Workaround to use self reflection without a pointer. Pointers would leed to much overhead in code
 // as all the forms are working with direct references to the metadata object to make the save and loading as easy as possible
 typedef struct FControl FControl;
 
+/**
+ * Struct for the control details (basically all fields are optional, defined
+ * properties change with control type)
+ */
 USTRUCT()
 struct FControlDetails
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere)
-	double CurrentValue;
-
+	/**
+	 * The minimum value of the control (used for slider controls)
+	 */
 	UPROPERTY(EditAnywhere)
 	double Min;
 
+	/**
+	 * The maximum value of the control (used for slider controls)
+	 */
 	UPROPERTY(EditAnywhere)
 	double Max;
 
-	// Never expose as UPROPERTY, as Unreal can't handle pointer fields in USTRUCT
-	// Needs to be converted manually to JSON
-	TArray<FControl> Options;
-
+	/**
+	 * A list of options (used for radio control)
+	 */
 	UPROPERTY(EditAnywhere)
-	FString Selected;
+	TArray<FString> Options;
 
-	UPROPERTY(EditAnywhere)
-	bool Toggled;
+	/**
+	 * A list of controls (used for container control)
+	 *
+	 * Important: Never expose as UPROPERTY, as Unreal can't handle pointer fields in USTRUCT
+	 * Note: Needs to be converted manually to JSON as isn't part of the USTRUCT
+	 */
+	TArray<FControl> Controls;
 
-	// Constructor for sliders
-	FControlDetails(const double& InCurrentValue, const double& InMin, const double& InMax)
-		: CurrentValue(InCurrentValue), Min(InMin), Max(InMax), Toggled() {}
+	/**
+	 * Constructor for slider type controls
+	 *
+	 * @param InMin The minimum value of the slider
+	 * @param InMax The maximum value of the slider
+	 */
+	FControlDetails(const double& InMin, const double& InMax)
+		: Min(InMin), Max(InMax) {}
 
-	// Constructor for Expanded Options
-	FControlDetails(const TArray<FControl>& InOptions, const FString& InSelected)
-		: CurrentValue(), Min(), Max(), Options(InOptions), Selected(InSelected), Toggled() {}
+	/**
+	 * Constructor for container type control
+	 *
+	 * @param InControls The list of controls the control contains
+	 */
+	FControlDetails(const TArray<FControl>& InControls)
+		: Min(), Max(), Controls(InControls) {}
 
-	// Constructor for Joystick
-	FControlDetails(const double& InCurrentValue)
-		: CurrentValue(InCurrentValue), Min(), Max(), Toggled() {}
+	/**
+	 * Constructor for radio type control
+	 *
+	 * @param InOptions The options available in the radio / dropdown input
+	 */
+	FControlDetails(const TArray<FString>& InOptions)
+		: Min(), Max(), Options(InOptions) {}
 
-	// Constructor for Toggle Button
-	FControlDetails(const bool InToggled)
-		: CurrentValue(), Min(), Max(), Toggled(InToggled) {}
-
+	/**
+	 * Constructor for joystick type control and default constructor
+	 */
 	FControlDetails()
-		: CurrentValue(), Min(), Max(), Toggled() {}
+		: Min(), Max() {}
 };
 
+/**
+ * Struct for a control of an environment
+ */
 USTRUCT()
 struct FControl
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere)
-	FString Name;
-
-	UPROPERTY(EditAnywhere)
-	TEnumAsByte<EControlType> Type = TEnumAsByte<EControlType>();
-
-	UPROPERTY(EditAnywhere)
-	FControlAction Action;
-
-	UPROPERTY(EditAnywhere)
-	FControlDetails Details;
-
+	/**
+     * The unique ID of the control
+     */
 	UPROPERTY(EditAnywhere)
 	FString Id;
 
-	bool operator==(const FControl& Other) const;
+	/**
+	 * The name of the environment
+	 */
+	UPROPERTY(EditAnywhere)
+	FString Name;
+
+	/**
+	 * The type of the control (as byte for JSON parsing)
+	 */
+	UPROPERTY(EditAnywhere)
+	TEnumAsByte<EControlType> Type = TEnumAsByte<EControlType>();
+
+	/**
+	 * The action definition of the control
+	 */
+	UPROPERTY(EditAnywhere)
+	FControlAction Action;
+
+	/**
+	 * The details of the control
+	 */
+	UPROPERTY(EditAnywhere)
+	FControlDetails Details;
 
 	FControl(const FString &InName, const EControlType &InType, const FControlAction &InAction, const FControlDetails &InDetails, const FString &InId)
-		: Name(InName), Type(InType), Action(InAction), Details(InDetails), Id(InId) {}
+		: Id(InId), Name(InName), Type(InType), Action(InAction), Details(InDetails) {}
 
 	FControl(const FString &InName, const EControlType &InType, const FControlAction &InAction, const FControlDetails &InDetails)
-		: Name(InName), Type(InType), Action(InAction), Details(InDetails), Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)) {}
+		: Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)), Name(InName), Type(InType), Action(InAction), Details(InDetails) {}
 
 	FControl()
-		: Action(FControlAction()), Details(FControlDetails()), Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)) {}
+		: Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)), Name(""), Action(FControlAction()), Details(FControlDetails()) {}
+
+	/**
+	 * Defines the compare operator (compares using the ID field)
+	 */
+	bool operator==(const FControl& Other) const;
 };
 
+/**
+ * Struct for an environment definition
+ */
 USTRUCT()
 struct FEnvironment
 {
 	GENERATED_BODY()
-	
-	UPROPERTY(EditAnywhere)
-	FString Name;
-	
-	UPROPERTY(EditAnywhere)
-	FEnvironmentVersion Version;
 
-	UPROPERTY(EditAnywhere)
-	TArray<FString> Previews;
-
-	UPROPERTY(EditAnywhere)
-	TArray<FPreset> Presets;
-
-	UPROPERTY(EditAnywhere)
-	TArray<FControl> Controls;
-
+	/**
+	 * The unique ID of the environment
+	 */
 	UPROPERTY(EditAnywhere)
 	FString Id;
 
+	/**
+	 * The name of the environment
+	 */
+	UPROPERTY(EditAnywhere)
+	FString Name;
+
+	/**
+	 * The current environment version
+	 */
+	UPROPERTY(EditAnywhere)
+	FEnvironmentVersion Version;
+
+	/**
+	 * The list of preview file paths for this environment
+	 */
+	UPROPERTY(EditAnywhere)
+	TArray<FString> Previews;
+
+	/**
+	 * The list of artist defined presets of this environment
+	 */
+	UPROPERTY(EditAnywhere)
+	TArray<FPreset> Presets;
+
+	/**
+	 * The list of controls, this environment exposes
+	 */
+	UPROPERTY(EditAnywhere)
+	TArray<FControl> Controls;
+
 	FEnvironment(const FString &InName, const FEnvironmentVersion &InVersion, const TArray<FString> &InPreviews, const TArray<FPreset> &InPresets, const TArray<FControl> &InControls, const FString& Id)
-		: Name(InName), Version(InVersion), Previews(InPreviews), Presets(InPresets), Controls(InControls), Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)) {}
+		: Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)), Name(InName), Version(InVersion), Previews(InPreviews), Presets(InPresets), Controls(InControls) {}
 
 	FEnvironment()
-		: Name(""), Version(FEnvironmentVersion()), Previews(TArray<FString>()), Presets(TArray<FPreset>()), Controls(TArray<FControl>()), Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)) {}
+		: Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)), Name(""), Version(FEnvironmentVersion()), Previews(TArray<FString>()), Presets(TArray<FPreset>()), Controls(TArray<FControl>()) {}
+
+	/**
+	 * Defines the compare operator (compares using the ID field)
+	 */
+	bool operator==(const FEnvironment& Other) const;
 };
 
+/**
+ * Type Hash functions for unreal 
+ */
 uint32 GetTypeHash(const FPreset& Preset);
 uint32 GetTypeHash(const FControl& Control);
+uint32 GetTypeHash(const FEnvironment& Environment);

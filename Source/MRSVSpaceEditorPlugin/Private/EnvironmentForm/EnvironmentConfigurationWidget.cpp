@@ -1,11 +1,12 @@
-#include "Form/ConfigurationWidget.h"
+
+#include "EnvironmentForm/EnvironmentConfigurationWidget.h"
 
 #include "ConfigurationDataHandler.h"
-#include "Form/ControlListFormWidget.h"
-#include "Form/HelperWidgets/StaticConfigurationInput.h"
+#include "EnvironmentForm/ControlListFormWidget.h"
+#include "HelperWidgets/StaticConfigurationInput.h"
 #include "Widgets/Text/SMultiLineEditableText.h"
 
-void SConfigurationWidget::Construct(const FArguments& InArgs)
+void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 {
 	//Construct basic view
 	ChildSlot

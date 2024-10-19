@@ -2,30 +2,37 @@
 
 UMRSVControlsComponent::UMRSVControlsComponent(FObjectInitializer const&)
 {
-	//Set enums empty
+	// Set enums empty
 	UEnum* EnumType = StaticEnum<EAvailableControls>();
 	TArray<TPair<FName, int64>> EmptyList = TArray<TPair<FName, int64>>();
 	EnumType->SetEnums(EmptyList, UEnum::ECppForm::Regular);
 }
 
+// Define the static control callback map
 TMap<FString, FMRSVControlValueCallback> UMRSVControlsComponent::ControlCallbackMap;
 
 void UMRSVControlsComponent::BindControlValueChanged(const FString& ControlName,
                                                      const FMRSVControlValueCallback& CallbackDelegate)
 {
+	// Log binding control callback
 	UE_LOG(LogTemp, Display, TEXT("Binding control %s to callback"), *ControlName);
+	// Add control callback to map
 	ControlCallbackMap.Add(ControlName, CallbackDelegate);
 }
 
 void UMRSVControlsComponent::ExecuteControlValueChanged(const FString& ControlName, const FString& ControlValue)
 {
+	// Find the control callback from the callback map
 	FMRSVControlValueCallback* Callback = ControlCallbackMap.Find(ControlName);
+	// Check ff found the callback and delegate is bound
 	if (Callback != nullptr && Callback->IsBound())
 	{
+		// Execute callback with given value
 		Callback->Execute(ControlValue);
 	}
 	else
 	{
+		// Log warn that no implementation was found for given control name
 		UE_LOG(LogTemp, Warning, TEXT("No implementation for control with name %s found"), *ControlName);
 	}
 }

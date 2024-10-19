@@ -1,12 +1,14 @@
 
-#include "Form/ControlListFormWidget.h"
+#include "EnvironmentForm/ControlListFormWidget.h"
 
-#include "Form/ControlConfigurationWidget.h"
+#include <string>
+
+#include "EnvironmentForm/ControlConfigurationWidget.h"
 
 void SControlListFormWidget::Construct(const FArguments& InArgs)
 {
 	//Store params
-	InternalControlList = InArgs._InitialControlList;
+	ControlList = InArgs._ControlList;
 	//Construct view
 	ChildSlot
 	.Padding(10.0f)
@@ -48,32 +50,42 @@ void SControlListFormWidget::Construct(const FArguments& InArgs)
 			SAssignNew( PropertyConfigFormContainer, SScrollBox )
 		]
 	];
-	//Construct Property Forms from stored metadata
-	for (int32 Index = 0; Index < InternalControlList->Num(); ++Index)
+	//Construct Property Forms from stored metadstd::to_string(std::to_string(std::to_string(ata
+    for (int32 Index = 0; Index < ControlList->Num(); Index++)
 	{
 		PropertyConfigFormContainer->AddSlot()
 		.Padding(0, 0.0f, 0.0f, 5.0f)
 		[
 			SNew(SControlConfigurationWidget)
-			.ParentBox(PropertyConfigFormContainer)
-			//Pass ref to control data
-			.ControlDataIndex(Index)
-			.ControlList(InternalControlList)
+			.ControlData(MakeShareable(&(*ControlList)[Index]))
+			.OnRemove_Lambda([this, Index](TSharedRef<SWidget> FormWidget) {
+				// Remove item in control list
+				ControlList->RemoveAt(Index);
+				// Remove widget
+				PropertyConfigFormContainer->RemoveSlot(FormWidget);
+			})
 		];
 	}
 }
 
 FReply SControlListFormWidget::AddPropertyConfigurationForm() const
 {
+	//Create new control object
+	FControl Control = FControl();
+	//Add Control to list
+	int Index = ControlList->Add(Control);
 	//Add slot in configuration form
 	PropertyConfigFormContainer->AddSlot()
 		.Padding(0, 0.0f, 0.0f, 5.0f)
 		[
 			SNew(SControlConfigurationWidget)
-			.ParentBox(PropertyConfigFormContainer)
-			//Create new control in metadata and pass ID
-			.ControlDataIndex(InternalControlList->Add(FControl()))
-			.ControlList(InternalControlList)
+			.ControlData(MakeShareable(&Control))
+			.OnRemove_Lambda([this, Index](TSharedRef<SWidget> FormWidget) {
+				// Remove item in control list
+				ControlList->RemoveAt(Index);
+				// Remove widget
+				PropertyConfigFormContainer->RemoveSlot(FormWidget);
+			})
 		];
 	//Add available control to the environment (TODO)
 	//UMRSVControlsComponent::AddAvailableControl(FName("Test Config"));
@@ -84,7 +96,7 @@ TSharedRef<SControlListFormWidget> SControlListFormWidget::ShowAsPopup(TSharedPt
 {
 	//Create widget
 	TSharedRef<SControlListFormWidget> PopupContent = SNew(SControlListFormWidget)
-		.InitialControlList(InitalList);
+		.ControlList(InitalList);
 	//Create popup window
 	FSlateApplication::Get().AddWindow(
 		SNew(SWindow)

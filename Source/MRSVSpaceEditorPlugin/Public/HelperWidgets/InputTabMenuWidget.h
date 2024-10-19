@@ -1,37 +1,73 @@
 #pragma once
 
-#define TAB_CONTENT_COLOR FLinearColor(0.3f, 0.3f, 0.3f, 0.2f)
+/**
+ * The background color of the active tab content
+ */
+#define CONTENT_BACKGROUND_COLOR FLinearColor(0.3f, 0.3f, 0.3f, 0.2f)
 
-class FMyTabButtonStyle : public FButtonStyle
+/**
+ * The button style for the tab buttons for both active and inactive states
+ */
+class FInputTabButtonStyle : public FButtonStyle
 {
-	FLinearColor DarkGray = FLinearColor(0.3f, 0.3f, 0.3f, 0.1f);
-	FLinearColor DarkerGray = FLinearColor(0.3f, 0.3f, 0.3f, 0.2f);
+
+	/**
+	 * The color for the tab button if active (Should be same as content background)
+	 */
+	FLinearColor ActiveTabButtonColor = CONTENT_BACKGROUND_COLOR;
+		
+	/**
+	 * The color for the tab button if inactive
+	 */
+	FLinearColor InActiveTabButtonColor = FLinearColor(0.3f, 0.3f, 0.3f, 0.1f);
+
+	/**
+	 * The color for the tab button if inactive but interacting (hovering, pressing)
+	 */
+	FLinearColor InActiveTabButtonColorInteract = FLinearColor(0.3f, 0.3f, 0.3f, 0.2f);
+	
 public:
-	FMyTabButtonStyle(bool IsActive)
+
+	/**
+	 * Creates a new Input Tab Button Style.
+	 *
+	 * @param IsActive Defines if the button style should be for an active or inactive button
+	 */
+	FInputTabButtonStyle(bool IsActive)
 	{
 		if(IsActive)
 		{
-			Normal.TintColor = TAB_CONTENT_COLOR;
-			Hovered.TintColor = TAB_CONTENT_COLOR;
-			Pressed.TintColor = TAB_CONTENT_COLOR;
+			Normal.TintColor = ActiveTabButtonColor;
+			Hovered.TintColor = ActiveTabButtonColor;
+			Pressed.TintColor = ActiveTabButtonColor;
 		} else
 		{
-			Normal.TintColor = DarkGray;
-			Hovered.TintColor = DarkerGray;
-			Pressed.TintColor = DarkerGray;
+			Normal.TintColor = InActiveTabButtonColor;
+			Hovered.TintColor = InActiveTabButtonColorInteract;
+			Pressed.TintColor = InActiveTabButtonColorInteract;
 		}
 	}
 };
 
-// A Tab Menu that can be used as an Input
+/**
+ * A widget for a tab menu, that also serves as an input.
+ *
+ * @tparam T The type of the value each tab represents
+ */
 template<typename T>
 class SInputTabMenuWidget : public SCompoundWidget
 {
 public:
+	
+	/**
+	 * The slot widget for each tab
+	 */
 	class FSlot : public TBasicLayoutWidgetSlot<FSlot>
 	{
 		SLATE_SLOT_BEGIN_ARGS(FSlot, TBasicLayoutWidgetSlot<FSlot>)
+			// The title of the tab
 			SLATE_ARGUMENT(FName, Title)
+			// The underlying value of the tab
 			SLATE_ARGUMENT(T, Value)
 		SLATE_END_ARGS()
 		
@@ -41,17 +77,29 @@ public:
 		}
 	};
 
+	/**
+	 * A static function to create a new slot item for the tab menu
+	 *
+	 * @return The new slot item created
+	 */
 	static typename FSlot::FSlotArguments Slot()
 	{
 		return typename FSlot::FSlotArguments(MakeUnique<FSlot>());
 	}
 
+	/**
+	 * The event delegate type for the selection change. Contains one parameter for the value selected
+	 */
 	DECLARE_DELEGATE_OneParam(FOnSelectionChanged, T)
 
 	SLATE_BEGIN_ARGS( SInputTabMenuWidget ) {}
+		// Argument for the slots to input
 		SLATE_SLOT_ARGUMENT(SInputTabMenuWidget::FSlot, Slots)
-
+		
+		// The selected tab by default
 		SLATE_ARGUMENT(T, SelectedTab)
+		
+		// The event triggered when the selection changes
 		SLATE_EVENT( FOnSelectionChanged, OnSelectionChanged )
 	SLATE_END_ARGS()
 	
@@ -61,7 +109,7 @@ public:
 		this->OnSelectionChanged = InArgs._OnSelectionChanged;
 		//Define brush for tab background
 		FSlateBrush* BackgroundBrush = new FSlateBrush();
-		BackgroundBrush->TintColor = TAB_CONTENT_COLOR;
+		BackgroundBrush->TintColor = CONTENT_BACKGROUND_COLOR;
 		//Create basic view
 		ChildSlot
 		[
@@ -149,22 +197,64 @@ public:
 		}
 	}
 private:
+	/**
+	 * Internal struct for the data passed to the tab button clicked event, containing all needed values
+	 * to change the content, styles and trigger the selection changed event
+	 */
 	struct FButtonClickData
 	{
+		/**
+		 * The content to show for this tab item
+		 */
 		TSharedRef<SWidget> Content;
+		
+		/**
+		 * The button clicked itself
+		 */
 		TSharedPtr<SButton> Button;
+
+		/**
+		 * The title of the tab
+		 */
 		FName Title;
+
+		/**
+		 * The value of the tab item slot
+		 */
 		T Value;
 
 		FButtonClickData(TSharedRef<SWidget> InContent, TSharedPtr<SButton> InButton, const FName InTitle, const T InValue)
 		: Content(InContent), Button(InButton), Title(InTitle), Value(InValue)
 		{}
 	};
-	
+
+	/**
+     * The widget container of the tab header (tab buttons)
+     */
 	TSharedPtr<SHorizontalBox> TabHeader;
+
+	/**
+	 * The list of tab buttons
+	 */
 	TArray<TSharedPtr<SButton>> ButtonList;
+
+	/**
+	 * The box containing the active tab content
+	 */
 	TSharedPtr<SBox> ActiveTabBox;
+
+	/**
+	 * The delegate for the selection changed event
+	 */
 	FOnSelectionChanged OnSelectionChanged;
-	FMyTabButtonStyle TabActiveStyle = FMyTabButtonStyle(true);
-	FMyTabButtonStyle TabInActiveStyle = FMyTabButtonStyle(false);
+
+	/**
+	 * The style for active tab buttons
+	 */
+	FInputTabButtonStyle TabActiveStyle = FInputTabButtonStyle(true);
+
+	/**
+	 * The style for inactive tab buttons
+	 */
+	FInputTabButtonStyle TabInActiveStyle = FInputTabButtonStyle(false);
 };

@@ -1,17 +1,14 @@
-#include "Form/ControlConfigurationWidget.h"
+#include "EnvironmentForm/ControlConfigurationWidget.h"
 
 #include "PropertyCustomizationHelpers.h"
-#include "Form/DynamicControlDetailsForm.h"
-#include "Form/HelperWidgets/SearchableDropdownWidget.h"
-#include "Form/HelperWidgets/StaticConfigurationInput.h"
-#include "Form/HelperWidgets/InputTabMenuWidget.h"
+#include "HelperWidgets/InputTabMenuWidget.h"
+#include "HelperWidgets/StaticConfigurationInput.h"
 
 void SControlConfigurationWidget::Construct(const FArguments& InArgs)
 {
 	//Store params
-	ParentBox = InArgs._ParentBox;
-	ControlDataIndex = MakeUnique<int>(InArgs._ControlDataIndex);
-	ControlList = InArgs._ControlList;
+	ControlData = InArgs._ControlData;
+	RemoveCallback = InArgs._OnRemove;
 	//Define color for blueprint function background
 	FSlateBrush* BPFuncBackgroundBrush = new FSlateBrush();
 	BPFuncBackgroundBrush->TintColor = FLinearColor(0.8f, 0.0f, 0.0f, 0.3f);
@@ -22,15 +19,16 @@ void SControlConfigurationWidget::Construct(const FArguments& InArgs)
 	RoundedBrush->OutlineSettings.CornerRadii = FVector4(8.0f, 8.0f, 8.0f, 8.0f);
 	RoundedBrush->OutlineSettings.RoundingType = ESlateBrushRoundingType::FixedRadius;
 	//Set the actor from control metadata
-	if (!GetControlData()->Action.Actor.IsEmpty())
+	if (!ControlData->Action.Actor.IsEmpty())
 	{
-		ChosenActor = Cast<AActor>(StaticLoadObject(AActor::StaticClass(), nullptr, *GetControlData()->Action.Actor));
+		UE_LOG(LogTemp, Display, TEXT("TESTEST %s"), *ControlData->Action.Actor);
+		ChosenActor = Cast<AActor>(StaticLoadObject(AActor::StaticClass(), nullptr, *ControlData->Action.Actor));
 	}
 	// Define type options from Enum
 	UEnum* ControlTypeRef = StaticEnum<EControlType>();
 	for (uint8 i = 0; i < ControlTypeRef->NumEnums() - 1; ++i)
 	{
-		TypeOptions.Add(MakeShareable(new FDropdownItem(
+		TypeOptions.Add(MakeShareable(new SSearchableDropdownWidget<EControlType>::FDropdownItem(
 			static_cast<EControlType>(ControlTypeRef->GetValueByIndex(i)),
 			ControlTypeRef->GetDisplayNameTextByIndex(i).ToString())));
 	}
@@ -50,10 +48,10 @@ void SControlConfigurationWidget::Construct(const FArguments& InArgs)
 				[
 					SNew( SEditableText )
 					.HintText(FText::FromString("Type Property Name..."))
-					.Text(FText::FromString(GetControlData()->Name))
+					.Text(FText::FromString(ControlData->Name))
 					.OnTextChanged_Lambda([this](const FText& NewText)
 					{
-						GetControlData()->Name = NewText.ToString();
+						ControlData->Name = NewText.ToString();
 					})
 				]
 				+SHorizontalBox::Slot()
@@ -75,7 +73,7 @@ void SControlConfigurationWidget::Construct(const FArguments& InArgs)
 					SNew(SSearchableDropdownWidget<EControlType>)
 					.HintText("Choose control type... ")
 					.OptionsSource(&TypeOptions) // Source for the dropdown
-					.SelectedOption(GetControlData()->Type ? MakeShareable(new FDropdownItem(GetControlData()->Type.GetValue(), ControlTypeRef->GetDisplayNameTextByIndex(GetControlData()->Type.GetValue()).ToString())) : nullptr)
+					.SelectedOption(ControlData->Type ? MakeShareable(new SSearchableDropdownWidget<EControlType>::FDropdownItem(ControlData->Type.GetValue(), ControlTypeRef->GetDisplayNameTextByIndex(ControlData->Type.GetValue()).ToString())) : nullptr)
 					.OnSelectionChanged(this, &SControlConfigurationWidget::OnTypeSelected) // Handle selection
 				]
 			]
@@ -88,19 +86,19 @@ void SControlConfigurationWidget::Construct(const FArguments& InArgs)
 					SAssignNew(DetailsForm, SDynamicControlDetailsForm)
 					.ControlDetails_Lambda([this]()
 					{
-						return &GetControlData()->Details;
+						return &ControlData->Details;
 					})
-					.InitalType(GetControlData()->Type ? new EControlType(GetControlData()->Type.GetValue()) : nullptr)
+					.InitalType(ControlData->Type ? new EControlType(ControlData->Type.GetValue()) : nullptr)
 				]
 			]
 			+SVerticalBox::Slot()
 			.AutoHeight()
 			[
 				SNew(SInputTabMenuWidget<EControlActionType>)
-				.SelectedTab(GetControlData()->Action.Type)
+				.SelectedTab(ControlData->Action.Type)
 				.OnSelectionChanged_Lambda([this](EControlActionType SelectedType)
 				{
-					GetControlData()->Action.Type = SelectedType;
+					ControlData->Action.Type = SelectedType;
 				})
 				+ SInputTabMenuWidget<EControlActionType>::Slot()
 				.Title("Actor")
@@ -122,7 +120,7 @@ void SControlConfigurationWidget::Construct(const FArguments& InArgs)
 							//Allow only actors
 							.AllowedClass(AActor::StaticClass())
 							.OnObjectChanged(this, &SControlConfigurationWidget::OnActorSelected)
-							.ObjectPath(this, &SControlConfigurationWidget::GetCurrentObjectPath)
+							.ObjectPath(this, &SControlConfigurationWidget::GetActorPathName)
 						]
 						+SVerticalBox::Slot()
 						.VAlign(VAlign_Top)
@@ -136,7 +134,7 @@ void SControlConfigurationWidget::Construct(const FArguments& InArgs)
 								return ChosenActor != nullptr;
 							})
 							.OptionsSource(&ActorProperties) // Source for the dropdown
-							.SelectedOption(!GetControlData()->Action.Property.IsEmpty() ? MakeShareable(new FDropdownItem(GetControlData()->Action.Property, GetControlData()->Action.Property)) : nullptr)
+							.SelectedOption(!ControlData->Action.Property.IsEmpty() ? MakeShareable(new SSearchableDropdownWidget<FString>::FDropdownItem(ControlData->Action.Property, ControlData->Action.Property)) : nullptr)
 							.OnSelectionChanged(this, &SControlConfigurationWidget::OnActorPropertySelected) // Handle selection
 						]
 					]
@@ -158,6 +156,13 @@ void SControlConfigurationWidget::Construct(const FArguments& InArgs)
 						.Text(FText::FromString("Explanation on how to implement MRSV Blueprint Events (TODO)"))
 					]					
 				]
+				+ SInputTabMenuWidget<EControlActionType>::Slot()
+				.Title("No Action")
+				.Value(NONE)
+				[
+					SNew(STextBlock)
+					.Text(FText::FromString("No Action defined"))
+				]
 			]
 		]
 	];
@@ -165,14 +170,12 @@ void SControlConfigurationWidget::Construct(const FArguments& InArgs)
 
 FReply SControlConfigurationWidget::OnRemoveClicked()
 {
-	if (ParentBox.IsValid())
+	if (RemoveCallback.ExecuteIfBound(AsShared()))
 	{
-		//Remove from metadata and don't shrink array to not mix up array indexes
-		ControlList->RemoveAt(*ControlDataIndex, EAllowShrinking::No);
-		//Remove slot from UI
-		ParentBox->RemoveSlot(AsShared());
+		return FReply::Handled();
 	}
-	return FReply::Handled();
+	UE_LOG(LogTemp, Warning, TEXT("No callback registred for removing control"))
+	return FReply::Unhandled();
 }
 
 void SControlConfigurationWidget::OnActorSelected(const FAssetData& AssetData)
@@ -180,7 +183,7 @@ void SControlConfigurationWidget::OnActorSelected(const FAssetData& AssetData)
 	// Handle the selected object here
 	ChosenActor = Cast<AActor>(AssetData.GetAsset());
 	//Store in metadata
-	GetControlData()->Action.Actor = ChosenActor->GetPathName();
+	ControlData->Action.Actor = ChosenActor->GetPathName();
 	//Clear slots
 	ActorProperties.Empty();
 	//Reset chosen property
@@ -199,7 +202,7 @@ void SControlConfigurationWidget::OnActorSelected(const FAssetData& AssetData)
 			{
 				// Add the property name to the list
 				// TODO store a better reference to the property (ID?)
-				ActorProperties.Add(MakeShareable(new FDropdownItem(Property->GetName(), Property->GetDisplayNameText().ToString())));
+				ActorProperties.Add(MakeShareable(new SSearchableDropdownWidget<FString>::FDropdownItem(Property->GetName(), Property->GetDisplayNameText().ToString())));
 			}
 		}
 		// Enable property input
@@ -217,7 +220,7 @@ void SControlConfigurationWidget::OnActorPropertySelected(TSharedPtr<FString> Ne
 {
 	if(NewSelection.IsValid())
 	{
-		GetControlData()->Action.Property = *NewSelection;
+		ControlData->Action.Property = *NewSelection;
 		ChosenProperty = NewSelection;
 	}
 }
@@ -227,19 +230,14 @@ void SControlConfigurationWidget::OnTypeSelected(TSharedPtr<EControlType> NewSel
 	if(NewSelection.IsValid())
 	{
 		//Store selection
-		GetControlData()->Type = *NewSelection;
+		ControlData->Type = *NewSelection;
 		//Update Dynamic Details Form
 		DetailsForm->SetType(&*NewSelection);
 	}
 }
 
-FString SControlConfigurationWidget::GetCurrentObjectPath() const
+FString SControlConfigurationWidget::GetActorPathName() const
 {
 	// Return the current object path as a string
 	return ChosenActor != nullptr ? ChosenActor->GetPathName() : FString();
-}
-
-FControl* SControlConfigurationWidget::GetControlData() const
-{
-	return &(*ControlList)[*ControlDataIndex];
 }
