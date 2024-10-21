@@ -6,7 +6,7 @@
  * Blueprint Wrapper for the FJsonValue
  */
 UCLASS(BlueprintType, Blueprintable)
-class MRSVCOMPONENTS_API UControlValue : public UObject
+class MRSVSPACECOMPONENTS_API UControlValue : public UObject
 {
 	GENERATED_UCLASS_BODY()
 

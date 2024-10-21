@@ -1,4 +1,4 @@
-﻿#include "MRSVComponents.h"
+﻿#include "MRSVSpaceComponents.h"
 
 #define LOCTEXT_NAMESPACE "FMRSVComponentsModule"
 

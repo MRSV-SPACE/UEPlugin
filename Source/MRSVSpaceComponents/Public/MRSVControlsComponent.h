@@ -32,7 +32,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FMRSVControlValueCallback, const UControlValue
  * @author Florian Gubler
  */
 UCLASS(ClassGroup = ("MRSV*Space"), meta = (BlueprintSpawnableComponent))
-class MRSVCOMPONENTS_API UMRSVControlsComponent : public UActorComponent
+class MRSVSPACECOMPONENTS_API UMRSVControlsComponent : public UActorComponent
 {
 	GENERATED_UCLASS_BODY()
 public:
