@@ -288,11 +288,6 @@ struct FControl
 	 * Defines the compare operator (compares using the ID field)
 	 */
 	bool operator==(const FControl& Other) const;
-
-	~FControl()
-	{
-		UE_LOG(LogTemp, Display, TEXT("FControl Destroyed"));
-	}
 };
 
 /**

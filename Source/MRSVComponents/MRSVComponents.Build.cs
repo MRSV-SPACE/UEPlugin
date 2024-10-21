@@ -1,15 +1,15 @@
 ﻿using UnrealBuildTool;
 
-public class MRSVSpaceComponents : ModuleRules
+public class MRSVComponents : ModuleRules
 {
-    public MRSVSpaceComponents(ReadOnlyTargetRules Target) : base(Target)
+    public MRSVComponents(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "Core"
+                "Core",
             }
         );
 
@@ -18,6 +18,8 @@ public class MRSVSpaceComponents : ModuleRules
             {
                 "CoreUObject",
                 "Engine",
+                "Slate",
+                "SlateCore",
                 "Json"
             }
         );

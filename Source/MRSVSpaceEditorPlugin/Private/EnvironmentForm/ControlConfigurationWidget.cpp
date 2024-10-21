@@ -21,7 +21,6 @@ void SControlConfigurationWidget::Construct(const FArguments& InArgs)
 	//Set the actor from control metadata
 	if (!ControlData->Action.Actor.IsEmpty())
 	{
-		UE_LOG(LogTemp, Display, TEXT("TESTEST %s"), *ControlData->Action.Actor);
 		ChosenActor = Cast<AActor>(StaticLoadObject(AActor::StaticClass(), nullptr, *ControlData->Action.Actor));
 	}
 	// Define type options from Enum

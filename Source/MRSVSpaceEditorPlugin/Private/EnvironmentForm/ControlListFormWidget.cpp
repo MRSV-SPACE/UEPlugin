@@ -71,15 +71,15 @@ void SControlListFormWidget::Construct(const FArguments& InArgs)
 FReply SControlListFormWidget::AddPropertyConfigurationForm() const
 {
 	//Create new control object
-	FControl Control = FControl();
+	FControl* Control = new FControl();
 	//Add Control to list
-	int Index = ControlList->Add(Control);
+	int Index = ControlList->Add(*Control);
 	//Add slot in configuration form
 	PropertyConfigFormContainer->AddSlot()
 		.Padding(0, 0.0f, 0.0f, 5.0f)
 		[
 			SNew(SControlConfigurationWidget)
-			.ControlData(&Control)
+			.ControlData(Control)
 			.OnRemove_Lambda([this, Index](TSharedRef<SWidget> FormWidget) {
 				// Remove item in control list
 				ControlList->RemoveAt(Index);

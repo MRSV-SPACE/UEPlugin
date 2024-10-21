@@ -8,11 +8,14 @@ UMRSVControlsComponent::UMRSVControlsComponent(FObjectInitializer const&)
 	EnumType->SetEnums(EmptyList, UEnum::ECppForm::Regular);
 }
 
-// Define the static control callback map
+// Define the static properties
 TMap<FString, FMRSVControlValueCallback> UMRSVControlsComponent::ControlCallbackMap;
+TArray<FMRSVEnvironmentPlayedCallback> UMRSVControlsComponent::EnvironmentPlayedCallbacks;
+TArray<FMRSVEnvironmentStoppedCallback> UMRSVControlsComponent::EnvironmentStoppedCallbacks;
 
-void UMRSVControlsComponent::BindControlValueChanged(const FString& ControlName,
-                                                     const FMRSVControlValueCallback& CallbackDelegate)
+void UMRSVControlsComponent::BindControlValueChangedCallback(
+	const FString& ControlName,
+	const FMRSVControlValueCallback& CallbackDelegate)
 {
 	// Log binding control callback
 	UE_LOG(LogTemp, Display, TEXT("Binding control %s to callback"), *ControlName);
@@ -20,8 +23,21 @@ void UMRSVControlsComponent::BindControlValueChanged(const FString& ControlName,
 	ControlCallbackMap.Add(ControlName, CallbackDelegate);
 }
 
-void UMRSVControlsComponent::ExecuteControlValueChanged(const FString& ControlName, const FString& ControlValue)
+void UMRSVControlsComponent::BindEnvironmentPlayedCallback(const FMRSVEnvironmentPlayedCallback& CallbackDelegate)
 {
+	// Add delegate to played callback list
+	EnvironmentPlayedCallbacks.Add(CallbackDelegate);
+}
+
+void UMRSVControlsComponent::BindEnvironmentStoppedCallback(const FMRSVEnvironmentStoppedCallback& CallbackDelegate)
+{
+	// Add delegate to stopped callback list
+	EnvironmentStoppedCallbacks.Add(CallbackDelegate);
+}
+
+void UMRSVControlsComponent::ControlValueChanged(const FString& ControlName, const UControlValue* ControlValue)
+{
+	UE_LOG(LogTemp, Display, TEXT("Control %s changed"), *ControlName);
 	// Find the control callback from the callback map
 	FMRSVControlValueCallback* Callback = ControlCallbackMap.Find(ControlName);
 	// Check ff found the callback and delegate is bound
@@ -34,6 +50,30 @@ void UMRSVControlsComponent::ExecuteControlValueChanged(const FString& ControlNa
 	{
 		// Log warn that no implementation was found for given control name
 		UE_LOG(LogTemp, Warning, TEXT("No implementation for control with name %s found"), *ControlName);
+	}
+}
+
+void UMRSVControlsComponent::EnvironmentPlayed()
+{
+	// Loop registered callbacks and execute if bound
+	for(FMRSVEnvironmentPlayedCallback Callback : EnvironmentPlayedCallbacks)
+	{
+		if(!Callback.ExecuteIfBound())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("No implementation for environment played callback"));
+		}
+	}
+}
+
+void UMRSVControlsComponent::EnvironmentStopped()
+{
+	// Loop registered callbacks and execute if bound
+	for(FMRSVEnvironmentStoppedCallback Callback : EnvironmentStoppedCallbacks)
+	{
+		if(!Callback.ExecuteIfBound())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("No implementation for environment stopped callback"));
+		}
 	}
 }
 
