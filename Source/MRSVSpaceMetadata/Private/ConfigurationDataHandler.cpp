@@ -6,13 +6,13 @@
 void ConfigurationDataHandler::Load()
 {
 	//Only load if metadata file already exists
-	if(IFileManager::Get().FileExists(*GetMetaFilePath()))
+	if(IFileManager::Get().FileExists(*StoragePath))
 	{
 		//Create JsonObject and JsonString
 		TSharedPtr<FJsonObject> JsonObject;
 		FString JsonString;
 		//Load File to Json String
-		FFileHelper::LoadFileToString(JsonString, *GetMetaFilePath());
+		FFileHelper::LoadFileToString(JsonString, *StoragePath);
 		if (
 			//Deserialize Json to JsonObject
 			FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(JsonString), JsonObject)
@@ -77,7 +77,7 @@ void ConfigurationDataHandler::Save() const
 		// Convert the JSON object to a string
 		FJsonSerializer::Serialize(JsonObject.ToSharedRef(), TJsonWriterFactory<>::Create(&JsonString));
 		// Save the Json string to the metadata file
-		FFileHelper::SaveStringToFile(JsonString, *GetMetaFilePath());
+		FFileHelper::SaveStringToFile(JsonString, *StoragePath);
 	}
 }
 
@@ -86,18 +86,10 @@ TSharedPtr<FEnvironment> ConfigurationDataHandler::GetEnvironment() const
 	return EnvironmentData;
 }
 
-FString ConfigurationDataHandler::GetMetaFilePath()
+ConfigurationDataHandler::ConfigurationDataHandler(FString InPath)
 {
-	return FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("MRSV/metadata.json"));
-}
-
-ConfigurationDataHandler::ConfigurationDataHandler()
-{
+	// Store path
+	StoragePath = InPath;
+	// Load meta on initialization
 	Load();
-}
-
-ConfigurationDataHandler& ConfigurationDataHandler::GetInstance()
-{
-	static ConfigurationDataHandler instance;
-	return instance;
 }

@@ -14,7 +14,7 @@
  */
 static const FName MRSVSpacePluginTabName("MRSV*Space Plugin");
 
-TSharedPtr<ConfigurationDataHandler> FMRSVSpacePluginModule::ConfigurationDataHandler;
+TSharedPtr<ConfigurationDataHandler> FMRSVSpacePluginModule::DataHandler;
 
 void FMRSVSpacePluginModule::StartupModule()
 {
@@ -49,7 +49,8 @@ void FMRSVSpacePluginModule::StartupModule()
 		// Default Tab is hidden
 		.SetMenuType(ETabSpawnerMenuType::Hidden);
 	// Load environment data
-	ConfigurationDataHandler = MakeShareable(&ConfigurationDataHandler::GetInstance());
+	DataHandler = MakeShareable(new ConfigurationDataHandler(
+		FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("MRSV/metadata.json"))));
 }
 
 void FMRSVSpacePluginModule::ShutdownModule()
@@ -73,7 +74,11 @@ TSharedRef<SDockTab> FMRSVSpacePluginModule::OnSpawnPluginTab(const FSpawnTabArg
 		[
 			// Content is a ConfigurationWidget
 			SNew(SEnvironmentConfigurationWidget)
-			.EnvironmentData(ConfigurationDataHandler->GetEnvironment())
+			.EnvironmentData(DataHandler->GetEnvironment())
+			.OnSave_Lambda([]
+			{
+				DataHandler->Save();
+			})
 		];
 }
 

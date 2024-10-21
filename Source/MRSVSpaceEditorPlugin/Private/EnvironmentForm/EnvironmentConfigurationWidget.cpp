@@ -10,6 +10,7 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 {
 	// Get parameters
 	EnvironmentData = InArgs._EnvironmentData;
+	OnSaveDelegate = InArgs._OnSave;
 	//Construct basic view
 	ChildSlot
 	.Padding(5.0f)
@@ -45,8 +46,11 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 					.ToolTipText(FText::FromString("Save the current environment data"))
 					.OnClicked_Lambda([this]()
 					{
-						ConfigurationDataHandler::GetInstance().Save();
-						return FReply::Handled();
+						if(OnSaveDelegate.ExecuteIfBound())
+						{
+							return FReply::Handled();
+						}
+						return FReply::Unhandled();
 					})
 				]
 			]

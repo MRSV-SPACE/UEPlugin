@@ -5,23 +5,19 @@
 /**
  * Handler class for the configuration data. Reads and saves the metadata of the
  * environment to the metadata storage file.
- *
- * Note: Singleton pattern. Please instantiate using GetInstance() static method
  */
 class MRSVSPACEMETADATA_API ConfigurationDataHandler
 {
 public:
 	/**
-	 * Singleton method to get instance of configuration data
-	 * handler.
+	 * Creates new data handler and loads metadata initially from storage
+	 *
+	 * @param InPath The file path to the storage metadata file
 	 */
-	static ConfigurationDataHandler& GetInstance();
-    	
-    // Remove copy constructor for singleton pattern
-    ConfigurationDataHandler(ConfigurationDataHandler const&) = delete;
-
+	ConfigurationDataHandler(FString InPath);
+	
 	/**
-	 * Loads the metadata from storage (Used in constructor)
+	 * Loads the metadata from storage
 	 */
 	void Load();
 	
@@ -35,16 +31,10 @@ public:
 	 */
 	TSharedPtr<FEnvironment> GetEnvironment() const;
 private:
-
 	/**
-	 * Private constructor fot handler
+	 * The file path to the storage file
 	 */
-	ConfigurationDataHandler();
-
-	/**
-	 * Helper method to get filepath to storage file
-	 */
-	static FString GetMetaFilePath();
+	FString StoragePath;
 
 	/**
 	 * Currently cached metadata

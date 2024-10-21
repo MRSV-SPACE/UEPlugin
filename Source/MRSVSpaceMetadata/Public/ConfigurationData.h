@@ -230,10 +230,11 @@ struct FControlDetails
 		: Min(), Max(), Options(InOptions) {}
 
 	/**
-	 * Constructor for joystick type control and default constructor
+	 * Constructor for joystick type control and default constructor.
+	 * Default set min 0 and max 100
 	 */
 	FControlDetails()
-		: Min(), Max() {}
+		: Min(0), Max(100) {}
 };
 
 /**

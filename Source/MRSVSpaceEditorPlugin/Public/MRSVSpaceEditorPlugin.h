@@ -50,5 +50,5 @@ private:
 	/**
 	 * The environment data ptr
 	 */
-	static TSharedPtr<ConfigurationDataHandler> ConfigurationDataHandler;
+	static TSharedPtr<ConfigurationDataHandler> DataHandler;
 };
