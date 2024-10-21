@@ -1,6 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ConfigurationDataHandler.h"
+#include "EnvironmentForm/EnvironmentConfigurationWidget.h"
 #include "Modules/ModuleManager.h"
 
 /**
@@ -38,10 +40,15 @@ private:
 	 * @param SpawnTabArgs Arguments given on SpawnTab
 	 * @return A Ref to the new Tab spawned
 	 */
-	static TSharedRef<SDockTab> OnSpawnPluginTab(const class FSpawnTabArgs& SpawnTabArgs);
+	static TSharedRef<SDockTab> OnSpawnPluginTab(const FSpawnTabArgs& SpawnTabArgs);
 	
 	/**
 	 * The UI Commands for the Plugin
 	 */
 	TSharedPtr<FUICommandList> PluginCommands;
+
+	/**
+	 * The environment data ptr
+	 */
+	static TSharedPtr<ConfigurationDataHandler> ConfigurationDataHandler;
 };

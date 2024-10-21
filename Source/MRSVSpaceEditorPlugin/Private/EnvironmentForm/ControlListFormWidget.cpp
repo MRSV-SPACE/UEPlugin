@@ -1,8 +1,6 @@
 
 #include "EnvironmentForm/ControlListFormWidget.h"
 
-#include <string>
-
 #include "EnvironmentForm/ControlConfigurationWidget.h"
 
 void SControlListFormWidget::Construct(const FArguments& InArgs)
@@ -50,21 +48,23 @@ void SControlListFormWidget::Construct(const FArguments& InArgs)
 			SAssignNew( PropertyConfigFormContainer, SScrollBox )
 		]
 	];
-	//Construct Property Forms from stored metadstd::to_string(std::to_string(std::to_string(ata
-    for (int32 Index = 0; Index < ControlList->Num(); Index++)
+	//Construct Property Forms from stored metadata
+	uint64 counter = 0;
+    for (FControl& Control : *ControlList)
 	{
 		PropertyConfigFormContainer->AddSlot()
 		.Padding(0, 0.0f, 0.0f, 5.0f)
 		[
 			SNew(SControlConfigurationWidget)
-			.ControlData(MakeShareable(&(*ControlList)[Index]))
-			.OnRemove_Lambda([this, Index](TSharedRef<SWidget> FormWidget) {
+			.ControlData(&Control)
+			.OnRemove_Lambda([this, counter](TSharedRef<SWidget> FormWidget) {
 				// Remove item in control list
-				ControlList->RemoveAt(Index);
+				ControlList->RemoveAt(counter);
 				// Remove widget
 				PropertyConfigFormContainer->RemoveSlot(FormWidget);
 			})
 		];
+    	counter++;
 	}
 }
 
@@ -79,7 +79,7 @@ FReply SControlListFormWidget::AddPropertyConfigurationForm() const
 		.Padding(0, 0.0f, 0.0f, 5.0f)
 		[
 			SNew(SControlConfigurationWidget)
-			.ControlData(MakeShareable(&Control))
+			.ControlData(&Control)
 			.OnRemove_Lambda([this, Index](TSharedRef<SWidget> FormWidget) {
 				// Remove item in control list
 				ControlList->RemoveAt(Index);
@@ -92,7 +92,7 @@ FReply SControlListFormWidget::AddPropertyConfigurationForm() const
 	return FReply::Handled();
 }
 
-TSharedRef<SControlListFormWidget> SControlListFormWidget::ShowAsPopup(TSharedPtr<TArray<FControl>> InitalList, FText PopUpTitle, FVector2D PopUpSize)
+TSharedRef<SControlListFormWidget> SControlListFormWidget::ShowAsPopup(TArray<FControl>* InitalList, FText PopUpTitle, FVector2D PopUpSize)
 {
 	//Create widget
 	TSharedRef<SControlListFormWidget> PopupContent = SNew(SControlListFormWidget)

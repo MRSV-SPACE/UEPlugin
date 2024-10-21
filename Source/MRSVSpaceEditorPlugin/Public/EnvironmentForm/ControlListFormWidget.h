@@ -10,7 +10,7 @@ class SControlListFormWidget : public SCompoundWidget
 public:
 	SLATE_BEGIN_ARGS(SControlListFormWidget) {}
 		// The initial list of controls
-		SLATE_ARGUMENT(TSharedPtr<TArray<FControl>>, ControlList)
+		SLATE_ARGUMENT(TArray<FControl>*, ControlList)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
@@ -24,7 +24,7 @@ public:
 	 * @return The created control list form widget
 	 */
 	static TSharedRef<SControlListFormWidget> ShowAsPopup(
-		TSharedPtr<TArray<FControl>> InitalList,
+		TArray<FControl>* InitalList,
 		FText PopupTitle,
 		FVector2D PopUpSize = FVector2D(800, 400));
 private:
@@ -36,7 +36,7 @@ private:
 	/**
 	 * The internal list of controls
 	 */
-	TSharedPtr<TArray<FControl>> ControlList;
+	TArray<FControl>* ControlList = nullptr;
 
 	/**
 	 * The default font size

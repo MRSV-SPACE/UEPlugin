@@ -1,5 +1,6 @@
 #include "MRSVSpaceEditorPlugin.h"
 
+#include "ConfigurationDataHandler.h"
 #include "MRSVSpaceEditorPluginStyle.h"
 #include "MRSVSpaceEditorPluginCommands.h"
 #include "Widgets/Docking/SDockTab.h"
@@ -12,6 +13,8 @@
  * A constant name for the Plugin
  */
 static const FName MRSVSpacePluginTabName("MRSV*Space Plugin");
+
+TSharedPtr<ConfigurationDataHandler> FMRSVSpacePluginModule::ConfigurationDataHandler;
 
 void FMRSVSpacePluginModule::StartupModule()
 {
@@ -45,6 +48,8 @@ void FMRSVSpacePluginModule::StartupModule()
 		.SetDisplayName(FText::FromString(MRSVSpacePluginTabName.ToString()))
 		// Default Tab is hidden
 		.SetMenuType(ETabSpawnerMenuType::Hidden);
+	// Load environment data
+	ConfigurationDataHandler = MakeShareable(&ConfigurationDataHandler::GetInstance());
 }
 
 void FMRSVSpacePluginModule::ShutdownModule()
@@ -68,6 +73,7 @@ TSharedRef<SDockTab> FMRSVSpacePluginModule::OnSpawnPluginTab(const FSpawnTabArg
 		[
 			// Content is a ConfigurationWidget
 			SNew(SEnvironmentConfigurationWidget)
+			.EnvironmentData(ConfigurationDataHandler->GetEnvironment())
 		];
 }
 

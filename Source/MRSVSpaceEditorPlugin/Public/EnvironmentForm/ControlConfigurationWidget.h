@@ -13,7 +13,7 @@ class SControlConfigurationWidget : public SCompoundWidget
 public:
 	SLATE_BEGIN_ARGS(SControlConfigurationWidget) {}
 		// Reference to the control object
-		SLATE_ARGUMENT(TSharedPtr<FControl>, ControlData)
+		SLATE_ARGUMENT(FControl*, ControlData)
 		
 		// Callback delegate for removing the control
 		SLATE_EVENT(FOnRemoveCallback, OnRemove)
@@ -26,7 +26,7 @@ private:
 	/**
 	 * The pointer to the control data object
 	 */
-	TSharedPtr<FControl> ControlData = nullptr;
+	FControl* ControlData = nullptr;
 	
 	/**
 	 * The callback delegate to remove the current control

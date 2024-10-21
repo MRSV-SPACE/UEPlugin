@@ -8,6 +8,8 @@
 
 void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 {
+	// Get parameters
+	EnvironmentData = InArgs._EnvironmentData;
 	//Construct basic view
 	ChildSlot
 	.Padding(5.0f)
@@ -62,10 +64,10 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 						SNew( SEditableText )
 						.Font(DefaultFont)
 						.HintText(FText::FromString("Environment Name..."))
-						.Text(FText::FromString(ConfigurationDataHandler::GetInstance().GetEnvironment()->Name))
+						.Text(FText::FromString(EnvironmentData->Name))
 						.OnTextChanged_Lambda([this](const FText& NewText)
 						{
-							ConfigurationDataHandler::GetInstance().GetEnvironment()->Name = NewText.ToString();
+							EnvironmentData->Name = NewText.ToString();
 						})
 					]
 				]
@@ -82,11 +84,11 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 						[
 							SNew( SEditableText )
 							.HintText(FText::FromString("Version Tag..."))
-							.Text(FText::FromString(ConfigurationDataHandler::GetInstance().GetEnvironment()->Version.Tag))
+							.Text(FText::FromString(EnvironmentData->Version.Tag))
 							.Font(DefaultFont)
 							.OnTextChanged_Lambda([this](const FText& NewText)
 							{
-								ConfigurationDataHandler::GetInstance().GetEnvironment()->Version.Tag = NewText.ToString();
+								EnvironmentData->Version.Tag = NewText.ToString();
 							})
 						]
 						+SVerticalBox::Slot()
@@ -97,10 +99,10 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 							.AutoWrapText(true)
 							.Font(DefaultFont)
 							.HintText(FText::FromString("Version Revision..."))
-							.Text(FText::FromString(ConfigurationDataHandler::GetInstance().GetEnvironment()->Version.Revision))
+							.Text(FText::FromString(EnvironmentData->Version.Revision))
 							.OnTextChanged_Lambda([this](const FText& NewText)
 							{
-								ConfigurationDataHandler::GetInstance().GetEnvironment()->Version.Revision = NewText.ToString();
+								EnvironmentData->Version.Revision = NewText.ToString();
 							})
 						]
 					]
@@ -116,7 +118,7 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 				.Text(FText::FromString("Configure Controls"))
 				.OnClicked_Lambda([this]()
 				{
-					SControlListFormWidget::ShowAsPopup(MakeShareable(&ConfigurationDataHandler::GetInstance().GetEnvironment()->Controls), FText::FromString("Environment Controls"));
+					SControlListFormWidget::ShowAsPopup(&EnvironmentData->Controls, FText::FromString("Environment Controls"));
 					return FReply::Handled();
 				})
 			]

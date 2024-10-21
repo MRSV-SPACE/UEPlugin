@@ -94,7 +94,7 @@ void SDynamicControlDetailsForm::Construct(const FArguments& InArgs)
 					.OnClicked_Lambda([this]()
 					{
 						//Create popup and add handle event
-						SControlListFormWidget::ShowAsPopup(MakeShareable(&ControlDetails->Controls), FText::FromString("Configure Dropdown Options"), FVector2D(700, 300));
+						SControlListFormWidget::ShowAsPopup(&ControlDetails->Controls, FText::FromString("Configure Dropdown Options"), FVector2D(700, 300));
 						return FReply::Handled();
 					})
 				]
