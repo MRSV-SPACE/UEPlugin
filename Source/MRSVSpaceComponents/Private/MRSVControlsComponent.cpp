@@ -81,7 +81,7 @@ void UMRSVControlsComponent::SetAvailableControls(TArray<FName> NameList)
 {
 	UEnum* EnumType = StaticEnum<EAvailableControls>();
 	TArray<TPair<FName, int64>> ControlEnums = TArray<TPair<FName, int64>>();
-	uint counter = 0;
+	uint64 counter = 0;
 	for(auto Name : NameList)
 	{
 		ControlEnums.Add(TPair<FName, int64>(Name, counter));
