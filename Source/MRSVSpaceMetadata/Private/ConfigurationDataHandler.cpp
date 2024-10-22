@@ -1,7 +1,6 @@
 #include "ConfigurationDataHandler.h"
 
 #include "JsonObjectConverter.h"
-#include "ModuleDescriptor.h"
 
 void ConfigurationDataHandler::Load()
 {
