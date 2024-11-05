@@ -2,7 +2,6 @@
 
 #include "EnvironmentForm/ControlListFormWidget.h"
 #include "HelperWidgets/StaticConfigurationInput.h"
-#include "HelperWidgets/StringSetInputWidget.h"
 #include "Widgets/Input/SNumericEntryBox.h"
 
 void SDynamicControlDetailsForm::Construct(const FArguments& InArgs)
@@ -69,11 +68,10 @@ void SDynamicControlDetailsForm::Construct(const FArguments& InArgs)
 			[
 				SNew(SHorizontalBox)
 				+SHorizontalBox::Slot()
-				.FillWidth(2)
+				.AutoWidth()
 				[
-					//String set input widget
-					SNew(SStringSetInputWidget)
-					.StringList(&ControlDetails->Options)
+					SNew(SButton)
+					.Text(FText::FromString("Configure Options (TODO)"))
 				]
 			]
 		]
