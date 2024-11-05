@@ -34,7 +34,7 @@ private:
 	FOnRemoveCallback RemoveCallback;
 
 	/**
-	 * The form the the control details
+	 * The form the control details
 	 */
 	TSharedPtr<SDynamicControlDetailsForm> DetailsForm;
 

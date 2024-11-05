@@ -31,7 +31,7 @@ private:
 	FControlDetails* ControlDetails = nullptr;
 
 	/**
-	 * The container widget for the inputs of slider contols
+	 * The container widget for the inputs of slider controls
 	 */
 	TSharedPtr<SVerticalBox> SliderInputs;
 

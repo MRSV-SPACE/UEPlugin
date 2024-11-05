@@ -22,7 +22,7 @@ void SStaticConfigurationInput::Construct(const FArguments& InArgs)
 		// Adding a slot for the input content
 		+ SHorizontalBox::Slot()
 		.VAlign(VAlign_Top)
-		// Fill widht as 5
+		// Fill width as 5
 		.FillWidth(5)
 		[
 			InArgs._Content.Widget
