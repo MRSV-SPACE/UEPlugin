@@ -4,6 +4,7 @@
 #include "ConfigurationDataHandler.h"
 #include "EnvironmentForm/ControlListFormWidget.h"
 #include "HelperWidgets/StaticConfigurationInput.h"
+#include "HelperWidgets/StringSetInputWidget.h"
 #include "Widgets/Text/SMultiLineEditableText.h"
 
 void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
@@ -57,6 +58,7 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 			/* STATIC INPUTS */
 			+ SVerticalBox::Slot()
 			.VAlign(VAlign_Top)
+			.Padding(0.0f, 0.0f, 0.0f, 5.0f)
 			.AutoHeight()
 			[
 				SNew(SVerticalBox)
@@ -73,6 +75,18 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 						{
 							EnvironmentData->Name = NewText.ToString();
 						})
+					]
+				]
+				//Tags section
+				+ SVerticalBox::Slot()
+				.AutoHeight()
+				[
+					SNew(SStaticConfigurationInput)
+					.LabelText(FText::FromString("Tags"))
+					[
+						//New String set input widget
+						SNew(SStringSetInputWidget)
+						.StringList(&EnvironmentData->Tags)
 					]
 				]
 				+ SVerticalBox::Slot()
@@ -128,3 +142,4 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 			]
 	];
 }
+

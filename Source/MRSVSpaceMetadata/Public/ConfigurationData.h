@@ -268,7 +268,7 @@ struct FControl
 	 */
 	UPROPERTY(EditAnywhere)
 	FControlAction Action;
-
+	
 	/**
 	 * The details of the control
 	 */
@@ -334,11 +334,17 @@ struct FEnvironment
 	UPROPERTY(EditAnywhere)
 	TArray<FControl> Controls;
 
-	FEnvironment(const FString &InName, const FEnvironmentVersion &InVersion, const TArray<FString> &InPreviews, const TArray<FPreset> &InPresets, const TArray<FControl> &InControls, const FString& Id)
-		: Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)), Name(InName), Version(InVersion), Previews(InPreviews), Presets(InPresets), Controls(InControls) {}
+	/**
+	 * The list of tags for this environment
+	 */
+	UPROPERTY(EditAnywhere)
+	TArray<FString> Tags;
+
+	FEnvironment(const FString& Id, const FString &InName, const FEnvironmentVersion &InVersion, const TArray<FString> &InPreviews,const TArray<FPreset> &InPresets, const TArray<FControl> &InControls, const TArray<FString> &InTags)
+		: Id(Id), Name(InName), Version(InVersion), Previews(InPreviews), Presets(InPresets), Controls(InControls),Tags(InTags) {}
 
 	FEnvironment()
-		: Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)), Name(""), Version(FEnvironmentVersion()), Previews(TArray<FString>()), Presets(TArray<FPreset>()), Controls(TArray<FControl>()) {}
+		: Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)), Name(""), Version(FEnvironmentVersion()), Previews(TArray<FString>()), Presets(TArray<FPreset>()), Controls(TArray<FControl>()), Tags(TArray<FString>()) {}
 
 	/**
 	 * Defines the compare operator (compares using the ID field)
