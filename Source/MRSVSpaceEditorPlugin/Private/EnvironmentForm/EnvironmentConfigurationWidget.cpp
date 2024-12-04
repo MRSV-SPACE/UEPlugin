@@ -3,6 +3,8 @@
 
 #include "ConfigurationDataHandler.h"
 #include "EnvironmentForm/ControlListFormWidget.h"
+#include "EnvironmentForm/PresetConfigurationWidget.h"
+#include "EnvironmentForm/PresetListFormWidget.h"
 #include "HelperWidgets/StaticConfigurationInput.h"
 #include "HelperWidgets/StringSetInputWidget.h"
 #include "Widgets/Text/SMultiLineEditableText.h"
@@ -137,6 +139,21 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 				.OnClicked_Lambda([this]()
 				{
 					SControlListFormWidget::ShowAsPopup(&EnvironmentData->Controls, FText::FromString("Environment Controls"));
+					return FReply::Handled();
+				})
+			]
+			/* Preset PopUp Buttons */
+			+ SVerticalBox::Slot()
+			.HAlign(HAlign_Left)
+			.VAlign(VAlign_Center)
+			.Padding(0.0f, 5.0f, 0.0f, 5.0f)
+			.AutoHeight()
+			[
+				SNew(SButton)
+				.Text(FText::FromString("Configure Presets"))
+				.OnClicked_Lambda([this]()
+				{
+					SPresetListFormWidget::ShowAsPopup(&EnvironmentData->Presets, &EnvironmentData->Controls, FText::FromString("Environment Presets"));
 					return FReply::Handled();
 				})
 			]

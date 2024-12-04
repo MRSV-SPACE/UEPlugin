@@ -67,7 +67,6 @@ FReply STagWidget::OnRemoveClicked()
 {
 	if (RemoveCallback.ExecuteIfBound(AsShared()))
 	{
-		UE_LOG(LogTemp, Display, TEXT("TagWidget successfully removed"));
 		return FReply::Handled();
 	}
 	UE_LOG(LogTemp, Warning, TEXT("No callback registred for removing tag"))

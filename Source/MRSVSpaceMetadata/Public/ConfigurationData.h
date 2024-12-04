@@ -62,13 +62,14 @@ struct FPreset
 	/**
 	 * The stored values of the preset
 	 */
-	UPROPERTY(EditAnywhere)
-	TMap<FString, FString> Values;
+	//UPROPERTY(EditAnywhere)
+	TMap<FString, TSharedPtr<FJsonValue>> Values = TMap<FString, TSharedPtr<FJsonValue>>();
+	
 
-	FPreset(const FString& InId, const FString& InName, const TMap<FString, FString>& InValues)
+	FPreset(const FString& InId, const FString& InName, const TMap<FString, TSharedPtr<FJsonValue>>& InValues)
 		: Id(InId), Name(InName), Values(InValues) {}
 
-	FPreset(const FString& InName, const TMap<FString, FString>& InValues)
+	FPreset(const FString& InName, const TMap<FString, TSharedPtr<FJsonValue>>& InValues)
 		: Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)), Name(InName), Values(InValues) {}
 
 	FPreset()

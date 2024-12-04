@@ -33,10 +33,21 @@ void ConfigurationDataHandler::Load()
 					{
 						//On succesfull load, add option to option array
 						EnvironmentData->Controls[i].Details.Controls.Add(*Control);
-					} else
+					}
+					else
 					{
 						UE_LOG(LogTemp, Error, TEXT("Loading option to as struct failed"));
 					}
+				}
+			}
+
+			auto PresetListLoad = JsonObject->GetArrayField(FString("presets"));
+			for(int i = 0; i < PresetListLoad.Num(); i++)
+			{
+				//Loop values
+				for(auto ValuesLoad : PresetListLoad[i]->AsObject()->GetObjectField(FString("values"))->Values)
+				{
+					EnvironmentData->Presets[i].Values.Add(ValuesLoad);
 				}
 			}
 		}
@@ -73,6 +84,20 @@ void ConfigurationDataHandler::Save() const
 			}
 			JsonObject->GetArrayField(FString("controls"))[i]->AsObject()->GetObjectField(FString("details"))->SetArrayField("controls", ControlArr);
 		}
+		
+		// Loop all controls available
+        for(int i = 0; i < EnvironmentData->Presets.Num(); i++)
+        {
+        	//Create the Json Option Object
+        	TSharedPtr<FJsonObject> PresetValuesMapObject = MakeShared<FJsonObject>();
+        	//Loop all options of control
+        	for (TMap<FString,TSharedPtr<FJsonValue>>::TIterator It(EnvironmentData->Presets[i].Values); It; ++It)
+        	{
+        		PresetValuesMapObject->SetField(It.Key(), It.Value());
+        	}
+        	JsonObject->GetArrayField(FString("presets"))[i]->AsObject()->SetObjectField(FString("values"), PresetValuesMapObject);
+        }
+		
 		// Convert the JSON object to a string
 		FJsonSerializer::Serialize(JsonObject.ToSharedRef(), TJsonWriterFactory<>::Create(&JsonString));
 		// Save the Json string to the metadata file
