@@ -19,9 +19,10 @@ public:
 	void Construct(const FArguments& InArgs);
 	/**
 	 * Reload the form and updated the control list for the presets
+	 * Same as if the user closed and reopened the form
 	 * @return Reply for handled events
 	 */
-	FReply ReloadForm();
+	FReply ReloadForm() const;
 
 	/**
 	 * Showing the form as a new popup window
@@ -66,5 +67,8 @@ private:
 	 */
 	FReply AddPropertyConfigurationForm() const;
 
-	void AddExistingPreset();
+	/**
+	 * Function to add every existing preset to the form
+	 */
+	void AddExistingPreset() const;
 };

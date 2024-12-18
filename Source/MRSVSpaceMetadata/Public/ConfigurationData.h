@@ -78,7 +78,11 @@ struct FPreset
 	/**
 	 * Defines the compare operator (compares using the ID field)
 	 */
-	bool operator==(const FPreset& Other) const;
+	bool operator==(const FPreset& Other) const
+	{
+		return Id == Other.Id;
+	}
+	
 };
 
 /**
@@ -276,7 +280,7 @@ struct FControl
 	UPROPERTY(EditAnywhere)
 	FControlDetails Details;
 
-	FControl(const FString &InName, const EControlType &InType, const FControlAction &InAction, const FControlDetails &InDetails, const FString &InId)
+	FControl(const FString& InId, const FString &InName, const EControlType &InType, const FControlAction &InAction, const FControlDetails &InDetails)
 		: Id(InId), Name(InName), Type(InType), Action(InAction), Details(InDetails) {}
 
 	FControl(const FString &InName, const EControlType &InType, const FControlAction &InAction, const FControlDetails &InDetails)
@@ -284,11 +288,16 @@ struct FControl
 
 	FControl()
 		: Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)), Name(""), Action(FControlAction()), Details(FControlDetails()) {}
-
+	
 	/**
 	 * Defines the compare operator (compares using the ID field)
 	 */
-	bool operator==(const FControl& Other) const;
+	
+	bool operator==(const FControl& Other) const
+	{
+		UE_LOG(LogTemp,Display,TEXT("%s == %s"),*Id,*Other.Id);
+		return Id == Other.Id;
+	}
 };
 
 /**
@@ -350,7 +359,10 @@ struct FEnvironment
 	/**
 	 * Defines the compare operator (compares using the ID field)
 	 */
-	bool operator==(const FEnvironment& Other) const;
+	bool operator==(const FEnvironment& Other) const
+	{
+		return Id.Equals(Other.Id);
+	}
 };
 
 /**

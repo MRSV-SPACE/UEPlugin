@@ -73,32 +73,49 @@ void SPresetListFormWidget::Construct(const FArguments& InArgs)
  */
 FReply SPresetListFormWidget::AddPropertyConfigurationForm() const
 {
-	//Create new preset object
-	FPreset* Preset = new FPreset();
 	//Add preset to list
-	int Index = PresetList->Add(*Preset);
+	int Index = PresetList->Add(FPreset());
+	FPreset* CurrentPreset = &(*PresetList)[Index];
 	//Add slot in configuration form
 	PropertyConfigFormContainer->AddSlot()
 	.Padding(0, 0.0f, 0.0f, 5.0f)
 	[
 		SNew(SPresetConfigurationWidget)
-		.PresetData(Preset)
+		.PresetData(CurrentPreset)
 		.Controls(ControlList)
-		.OnRemove_Lambda([this, Index](TSharedRef<SWidget> FormWidget) {
+		.OnRemove_Lambda([this, CurrentPreset](TSharedRef<SWidget> FormWidget) {
+			
 			// Remove item in preset list
-			PresetList->RemoveAt(Index);
+			// This needs to be done this way because when using any of the remove function it makes UE crash (not related to the remove function itself)
+			TArray<FPreset> NewPresets;
+			for (FPreset& TempPreset : *PresetList)
+			{
+				if (TempPreset != *CurrentPreset)
+				{
+					NewPresets.Add(TempPreset);
+				}
+			}
+
+			PresetList->Empty();
+			PresetList->Append(NewPresets);
+
 			// Remove widget
 			PropertyConfigFormContainer->RemoveSlot(FormWidget);
 		})
 	];
-		
+
+	// Reloading the form when adding a new preset prevent bugs when removing them later
+	// if the user add a new preset and remove it without closing the form before,
+	// the presets aren't properly saved and so the deleted preset will appear again when reopening the form 
+	ReloadForm();
+	
 	return FReply::Handled();
 }
 /**
  * Reload the form with the current control
  * @return Reply for handled events
  */
-FReply SPresetListFormWidget::ReloadForm()
+FReply SPresetListFormWidget::ReloadForm() const
 {
 	//Clear all children and add them again (pretty much the same as if the user closed the panel and reopened it) 
 	PropertyConfigFormContainer->ClearChildren();
@@ -136,7 +153,7 @@ TSharedRef<SPresetListFormWidget> SPresetListFormWidget::ShowAsPopup(TArray<FPre
 /**
  * Add all the existing presets
  */
-void SPresetListFormWidget::AddExistingPreset()
+void SPresetListFormWidget::AddExistingPreset() const
 {
 	uint64 counter = 0;
 	for (FPreset& Preset : *PresetList)
@@ -147,9 +164,20 @@ void SPresetListFormWidget::AddExistingPreset()
 			SNew(SPresetConfigurationWidget)
 			.PresetData(&Preset)
 			.Controls(ControlList)
-			.OnRemove_Lambda([this, counter](TSharedRef<SWidget> FormWidget) {
+			.OnRemove_Lambda([this, Preset](TSharedRef<SWidget> FormWidget) {
 				// Remove item in preset list
-				PresetList->RemoveAt(counter);
+				// This needs to be done this way because when using any of the remove function it makes UE crash (not related to the remove function itself)
+				TArray<FPreset> NewPresets;
+				for (FPreset& TempPreset : *PresetList)
+				{
+					if (TempPreset != Preset)
+					{
+						NewPresets.Add(TempPreset);
+					}
+				}
+
+				PresetList->Empty();
+				PresetList->Append(NewPresets);
 				// Remove widget
 				PropertyConfigFormContainer->RemoveSlot(FormWidget);
 			})

@@ -9,15 +9,18 @@ void SControlConfigurationWidget::Construct(const FArguments& InArgs)
 	//Store params
 	ControlData = InArgs._ControlData;
 	RemoveCallback = InArgs._OnRemove;
+	
 	//Define color for blueprint function background
 	FSlateBrush* BPFuncBackgroundBrush = new FSlateBrush();
 	BPFuncBackgroundBrush->TintColor = FLinearColor(0.8f, 0.0f, 0.0f, 0.3f);
+	
 	//Define rounded border for widget
 	FSlateBrush* RoundedBrush = new FSlateBrush();
 	RoundedBrush->TintColor = FLinearColor(0.3f, 0.3f, 0.3f, 0.1f);
 	RoundedBrush->DrawAs = ESlateBrushDrawType::Type::RoundedBox;
 	RoundedBrush->OutlineSettings.CornerRadii = FVector4(8.0f, 8.0f, 8.0f, 8.0f);
 	RoundedBrush->OutlineSettings.RoundingType = ESlateBrushRoundingType::FixedRadius;
+	
 	//Set the actor from control metadata
 	if (!ControlData->Action.Actor.IsEmpty())
 	{

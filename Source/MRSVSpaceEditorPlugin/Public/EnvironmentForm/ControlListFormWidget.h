@@ -27,6 +27,12 @@ public:
 		TArray<FControl>* InitalList,
 		FText PopupTitle,
 		FVector2D PopUpSize = FVector2D(800, 400));
+
+	/**
+	 * Function to reload the form 
+	 * Same as if the user closed and reopened the form
+	 */
+	void ReloadForm() const;
 private:
 	/**
 	 * The container widget for the control form widgets
@@ -49,4 +55,10 @@ private:
 	 * @return The reply if the event is handled (Used for handled events)
 	 */
 	FReply AddPropertyConfigurationForm() const;
+
+	/**
+	 * Function to add every existing control to the form
+	 */
+	void AddExistingControls() const;
+
 };
