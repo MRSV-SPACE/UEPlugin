@@ -88,7 +88,6 @@ void SPresetConfigurationWidget::Construct(const FArguments& InArgs)
  */
 void SPresetConfigurationWidget::OnConstructCompleted()
 {
-	//loop through each control 
 	for (int i = 0; i < ControlsList.Num(); i++)
 	{
 		AddControl(&ControlsList[i]);
@@ -138,7 +137,10 @@ void SPresetConfigurationWidget::AddControl(FControl* Control)
 				UE_LOG(LogTemp,Warning,TEXT("Container hasn't been implemented (nothing to do)"));
 				break;
 			case CHOICE:
-				AddChoiceSelectorControl(controlName,controlChoices);
+				if (controlChoices.Num()>0)
+				{
+					AddChoiceSelectorControl(controlName,controlChoices);
+				}
 				break;
 			default:
 				UE_LOG(LogTemp,Warning,TEXT("Preset Configuration Widget::AddControl() Switch went in default. something went wrong !"));
@@ -236,12 +238,12 @@ void SPresetConfigurationWidget::AddChoiceSelectorControl(FString name, TArray<F
 	// Get the value from the preset data
 	if (TSharedPtr<FJsonValue>* FoundValue = PresetData->Values.Find(name))
 	{
-		if ((*FoundValue)->Type == EJson::String) // Vérifiez si c'est une chaîne de caractères
+		if ((*FoundValue)->Type == EJson::String) // Check if it's a string 
 		{
 			FString StringValue = (*FoundValue)->AsString();
 			for (const auto& Choice : adaptedChoices)
 			{
-				if (Choice->Name == StringValue) // Associer la valeur au choix adapté
+				if (Choice->Name == StringValue) // Associate the string to a value
 				{
 					currentValue = Choice;
 					break;

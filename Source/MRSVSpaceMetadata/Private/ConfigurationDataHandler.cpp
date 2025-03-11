@@ -1,6 +1,6 @@
 #include "ConfigurationDataHandler.h"
-
 #include "JsonObjectConverter.h"
+#include "MetaDataUtils.h"
 
 void ConfigurationDataHandler::Load()
 {
@@ -20,26 +20,7 @@ void ConfigurationDataHandler::Load()
 			//Load JsonObject to Environment UStruct
 			&& FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), EnvironmentData.Get(), 0, 0))
 		{
-			//After successful deserialization manually load option fields as Ustruct doesn't support recursion objects
-			auto ControlListLoad = JsonObject->GetArrayField(FString("controls"));
-			for(int i = 0; i < ControlListLoad.Num(); i++)
-			{
-				//Loop options
-				for(auto OptionLoad : ControlListLoad[i]->AsObject()->GetObjectField(FString("details"))->GetArrayField(FString("options")))
-				{
-					//Create and load option
-					FControl* Control = new FControl();
-					if(FJsonObjectConverter::JsonObjectToUStruct(OptionLoad->AsObject().ToSharedRef(), Control, 0, 0))
-					{
-						//On succesfull load, add option to option array
-						EnvironmentData->Controls[i].Details.Controls.Add(*Control);
-					}
-					else
-					{
-						UE_LOG(LogTemp, Error, TEXT("Loading option to as struct failed"));
-					}
-				}
-			}
+			EnvironmentData->Controls = MetaDataUtils::ManuallyLoadControls(JsonObject);
 
 			auto PresetListLoad = JsonObject->GetArrayField(FString("presets"));
 			for(int i = 0; i < PresetListLoad.Num(); i++)

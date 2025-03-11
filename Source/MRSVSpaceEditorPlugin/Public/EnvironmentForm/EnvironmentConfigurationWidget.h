@@ -12,7 +12,8 @@ public:
 	SLATE_BEGIN_ARGS(SEnvironmentConfigurationWidget) {}
 		// Parameter for ptr to environment data
 		SLATE_ARGUMENT(TSharedPtr<FEnvironment>, EnvironmentData)
-
+		// Pointer to the list of default controls
+		SLATE_ARGUMENT(TSharedPtr<TArray<FControl>>, DefaultControls)
 		// Event for handling saving
 		SLATE_EVENT(FOnSave, OnSave)
 	SLATE_END_ARGS()
@@ -29,6 +30,11 @@ private:
 	 * The delegate for handling saving
 	 */
 	FOnSave OnSaveDelegate;
+
+	/**
+	 * Pointer to the list of all the default controls
+	 */
+	TSharedPtr<TArray<FControl>> DefaultControls;
 	
 	/**
 	 * The default font style

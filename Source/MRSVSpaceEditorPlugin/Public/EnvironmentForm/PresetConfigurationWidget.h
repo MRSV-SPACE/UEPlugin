@@ -14,6 +14,7 @@ public:
 	SLATE_BEGIN_ARGS(SPresetConfigurationWidget) {}
 		// Reference to the control object
 		SLATE_ARGUMENT(FPreset*, PresetData)
+		//Pointer to the list of controls
 		SLATE_ARGUMENT(TArray<FControl>*, Controls)
 		// Callback delegate for removing the control
 		SLATE_EVENT(FOnRemoveCallback, OnRemove)

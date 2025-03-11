@@ -34,7 +34,7 @@ void STagWidget::Construct(const FArguments& InArgs)
 				SNew(STextBlock)
 				.Text(FText::FromString(TagName))
 			]
-			+ SHorizontalBox::Slot()
+			+SHorizontalBox::Slot()
 			.VAlign(VAlign_Center)
 			.AutoWidth()
 			[
@@ -54,7 +54,6 @@ void STagWidget::Construct(const FArguments& InArgs)
 				]
 			]
 		]
-		
 	];
 }
 

@@ -56,7 +56,7 @@ void SPresetListFormWidget::Construct(const FArguments& InArgs)
 				.OnClicked_Raw(this, &SPresetListFormWidget::ReloadForm)
 			]
 		]
-		/* SCROLL CONTAINER FOR ENV PROPERTY FORMS */
+		/* SCROLL CONTAINER FOR PRESETS */
 		+SVerticalBox::Slot()
 		.VAlign(VAlign_Top)
 		.Padding(5.0f)
@@ -137,6 +137,7 @@ TSharedRef<SPresetListFormWidget> SPresetListFormWidget::ShowAsPopup(TArray<FPre
 	TSharedRef<SPresetListFormWidget> PopupContent = SNew(SPresetListFormWidget)
 		.PresetList(InitialList)
 		.ControlList(InitialControlList);
+	
 	//Create popup window
 	FSlateApplication::Get().AddWindow(
 		SNew(SWindow)

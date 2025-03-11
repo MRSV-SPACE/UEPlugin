@@ -41,6 +41,9 @@ private:
 	 * @return A Ref to the new Tab spawned
 	 */
 	static TSharedRef<SDockTab> OnSpawnPluginTab(const FSpawnTabArgs& SpawnTabArgs);
+
+	static TSharedPtr<TArray<FControl>> GetDefaultControls(FString StoragePath);
+
 	
 	/**
 	 * The UI Commands for the Plugin

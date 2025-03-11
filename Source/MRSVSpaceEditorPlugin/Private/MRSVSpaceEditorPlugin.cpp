@@ -8,6 +8,7 @@
 #include "Widgets/Text/STextBlock.h"
 #include "ToolMenus.h"
 #include "EnvironmentForm/EnvironmentConfigurationWidget.h"
+#include "MetaDataUtils.h"
 
 /**
  * A constant name for the Plugin
@@ -51,6 +52,7 @@ void FMRSVSpacePluginModule::StartupModule()
 	// Load environment data
 	DataHandler = MakeShareable(new ConfigurationDataHandler(
 		FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("MRSV/metadata.json"))));
+
 }
 
 void FMRSVSpacePluginModule::ShutdownModule()
@@ -62,6 +64,39 @@ void FMRSVSpacePluginModule::ShutdownModule()
 	FMRSVSpaceEditorPluginCommands::Unregister();
 	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(MRSVSpacePluginTabName);
 }
+
+TSharedPtr<TArray<FControl>> FMRSVSpacePluginModule::GetDefaultControls(FString StoragePath)
+{
+	//Only load if metadata file already exists
+	if(IFileManager::Get().FileExists(*StoragePath))
+	{
+		//Create JsonObject and JsonString
+		TSharedPtr<FJsonObject> JsonObject;
+		FString JsonString;
+		//Load File to Json String
+		FFileHelper::LoadFileToString(JsonString, *StoragePath);
+		if (
+			//Deserialize Json to JsonObject
+			FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(JsonString), JsonObject)
+			//Check JsonObject is valid after deserialization
+			&& JsonObject.IsValid())
+		{
+			return MakeShared<TArray<FControl>>(MetaDataUtils::ManuallyLoadControls(JsonObject));
+
+		}
+		else
+		{
+			UE_LOG(LogTemp,Error,TEXT("%s"),TEXT("Failed to load default controls config"));
+		}
+		
+	}
+	else
+	{
+		UE_LOG(LogTemp,Warning,TEXT("%s"),TEXT("No default controls config provider"));
+	}
+	return nullptr;
+}
+
 
 TSharedRef<SDockTab> FMRSVSpacePluginModule::OnSpawnPluginTab(const FSpawnTabArgs& SpawnTabArgs)
 {
@@ -75,6 +110,7 @@ TSharedRef<SDockTab> FMRSVSpacePluginModule::OnSpawnPluginTab(const FSpawnTabArg
 			// Content is a ConfigurationWidget
 			SNew(SEnvironmentConfigurationWidget)
 			.EnvironmentData(DataHandler->GetEnvironment())
+			.DefaultControls(GetDefaultControls(FPaths::Combine(FPaths::ProjectPluginsDir(),TEXT("mrsv-unreal-plugin/MRSV/DefaultControls.json"))))
 			.OnSave_Lambda([]
 			{
 				DataHandler->Save();

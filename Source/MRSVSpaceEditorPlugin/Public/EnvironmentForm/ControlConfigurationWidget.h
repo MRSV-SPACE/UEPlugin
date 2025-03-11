@@ -14,7 +14,8 @@ public:
 	SLATE_BEGIN_ARGS(SControlConfigurationWidget) {}
 		// Reference to the control object
 		SLATE_ARGUMENT(FControl*, ControlData)
-		
+		// Is the control part of the default controls list 
+		SLATE_ARGUMENT(bool,isDefault)
 		// Callback delegate for removing the control
 		SLATE_EVENT(FOnRemoveCallback, OnRemove)
 	SLATE_END_ARGS()
@@ -27,6 +28,11 @@ private:
 	 * The pointer to the control data object
 	 */
 	FControl* ControlData = nullptr;
+
+	/**
+	 * Is the control a default control 
+	 */
+	bool isDefault = false;
 	
 	/**
 	 * The callback delegate to remove the current control

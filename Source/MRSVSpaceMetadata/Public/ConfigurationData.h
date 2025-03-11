@@ -90,6 +90,8 @@ struct FPreset
  */
 UENUM()
 enum EControlType : uint8 {
+	/* Defines a on / off toggle button */
+	TOGGLE UMETA(DisplayName = "Toggle Button"),
 	
 	/* Defines a free horizontal slider */
 	SLIDER_FREE_HORIZONTAL UMETA(DisplayName = "Free Horizontal Slider"),
@@ -106,9 +108,6 @@ enum EControlType : uint8 {
 	/* Defines a joystick input*/
 	JOYSTICK UMETA(DisplayName = "Joystick"),
 
-	/* Defines a on / off toggle button */
-	TOGGLE UMETA(DisplayName = "Toggle Button"),
-
 	/* Defines a container for other controls */
 	CONTAINER UMETA(DisplayName = "Container"),
 
@@ -122,7 +121,7 @@ enum EControlType : uint8 {
 UENUM()
 enum EControlActionType {
 
-	/* No Action defined (Only used for container control )*/
+	/* No Action defined (Only used for container control)*/
 	NONE,
 	
 	/* Defines the action updating a specific property on an actor in scene */
@@ -202,6 +201,12 @@ struct FControlDetails
 	TArray<FString> Options;
 
 	/**
+	 * The list of default options (defined in this file : \Plugins\mrsv-unreal-plugin\MRSV)
+	 */
+	UPROPERTY(EditAnywhere)
+	TArray<FString> DefaultOptions;
+
+	/**
 	 * A list of controls (used for container control)
 	 *
 	 * Important: Never expose as UPROPERTY, as Unreal can't handle pointer fields in USTRUCT
@@ -239,7 +244,7 @@ struct FControlDetails
 	 * Default set min 0 and max 100
 	 */
 	FControlDetails()
-		: Min(0), Max(100) {}
+		: Min(0), Max(100) {};
 };
 
 /**
@@ -280,14 +285,20 @@ struct FControl
 	UPROPERTY(EditAnywhere)
 	FControlDetails Details;
 
-	FControl(const FString& InId, const FString &InName, const EControlType &InType, const FControlAction &InAction, const FControlDetails &InDetails)
-		: Id(InId), Name(InName), Type(InType), Action(InAction), Details(InDetails) {}
+	/**
+	 * Property to know if the control is default
+	 */
+	UPROPERTY(EditAnywhere)
+	bool IsDefault = false;
 
-	FControl(const FString &InName, const EControlType &InType, const FControlAction &InAction, const FControlDetails &InDetails)
-		: Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)), Name(InName), Type(InType), Action(InAction), Details(InDetails) {}
+	FControl(const FString& InId, const FString &InName, const EControlType &InType, const FControlAction &InAction, const FControlDetails &InDetails, const bool &InIsDefault)
+		: Id(InId), Name(InName), Type(InType), Action(InAction), Details(InDetails) , IsDefault(InIsDefault) {}
+
+	FControl(const FString &InName, const EControlType &InType, const FControlAction &InAction, const FControlDetails &InDetails, const bool &InIsDefault)
+		: Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)), Name(InName), Type(InType), Action(InAction), Details(InDetails), IsDefault(InIsDefault) {}
 
 	FControl()
-		: Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)), Name(""), Action(FControlAction()), Details(FControlDetails()) {}
+		: Id(FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower)), Name(""), Action(FControlAction()), Details(FControlDetails()), IsDefault(false) {}
 	
 	/**
 	 * Defines the compare operator (compares using the ID field)
@@ -295,7 +306,6 @@ struct FControl
 	
 	bool operator==(const FControl& Other) const
 	{
-		UE_LOG(LogTemp,Display,TEXT("%s == %s"),*Id,*Other.Id);
 		return Id == Other.Id;
 	}
 };

@@ -8,6 +8,7 @@ void SControlConfigurationWidget::Construct(const FArguments& InArgs)
 {
 	//Store params
 	ControlData = InArgs._ControlData;
+	isDefault = InArgs._isDefault;
 	RemoveCallback = InArgs._OnRemove;
 	
 	//Define color for blueprint function background
@@ -34,6 +35,7 @@ void SControlConfigurationWidget::Construct(const FArguments& InArgs)
 			static_cast<EControlType>(ControlTypeRef->GetValueByIndex(i)),
 			ControlTypeRef->GetDisplayNameTextByIndex(i).ToString())));
 	}
+	
 	//Construct basic view
 	ChildSlot
 	[
@@ -48,7 +50,8 @@ void SControlConfigurationWidget::Construct(const FArguments& InArgs)
 				SNew(SHorizontalBox)
 				+SHorizontalBox::Slot()
 				[
-					SNew( SEditableText )
+					SNew(SEditableText)
+					.IsReadOnly(isDefault)
 					.HintText(FText::FromString("Type Property Name..."))
 					.Text(FText::FromString(ControlData->Name))
 					.OnTextChanged_Lambda([this](const FText& NewText)
@@ -61,6 +64,7 @@ void SControlConfigurationWidget::Construct(const FArguments& InArgs)
 				.Padding(5.0f, 0.0f)
 				[
 					SNew(SButton)
+					.IsEnabled(!isDefault)
 					.Text(FText::FromString("x"))
 					.ButtonColorAndOpacity(FLinearColor::Red)
 					.OnClicked(this, &SControlConfigurationWidget::OnRemoveClicked)
@@ -74,8 +78,14 @@ void SControlConfigurationWidget::Construct(const FArguments& InArgs)
 				[
 					SNew(SSearchableDropdownWidget<EControlType>)
 					.HintText("Choose control type... ")
+					.IsEnabled(!isDefault)
 					.OptionsSource(&TypeOptions) // Source for the dropdown
+					// /!\ For now, the default selection is the first item of the list.
+					// This is because the issue for now is that when checking the ControlData Type,
+					// if it's the first item of the list (which is 0) it takes it a "false" instead of a valid type
+					// This needs to be patched in the future with a clean solution
 					.SelectedOption(ControlData->Type ? MakeShareable(new SSearchableDropdownWidget<EControlType>::FDropdownItem(ControlData->Type.GetValue(), ControlTypeRef->GetDisplayNameTextByIndex(ControlData->Type.GetValue()).ToString())) : nullptr)
+					//.SelectedOption(MakeShareable(new SSearchableDropdownWidget<EControlType>::FDropdownItem(ControlData->Type.GetValue(), ControlTypeRef->GetDisplayNameTextByIndex(ControlData->Type.GetValue()).ToString())))
 					.OnSelectionChanged(this, &SControlConfigurationWidget::OnTypeSelected) // Handle selection
 				]
 			]
@@ -90,6 +100,7 @@ void SControlConfigurationWidget::Construct(const FArguments& InArgs)
 					{
 						return &ControlData->Details;
 					})
+					.IsDefault(isDefault)
 					.InitalType(ControlData->Type ? new EControlType(ControlData->Type.GetValue()) : nullptr)
 				]
 			]
@@ -203,7 +214,7 @@ void SControlConfigurationWidget::OnActorSelected(const FAssetData& AssetData)
 			if (Property->HasAnyPropertyFlags(UP::EditAnywhere))
 			{
 				// Add the property name to the list
-				// TODO store a better reference to the property (ID?)
+				// TODO: store a better reference to the property (ID?)
 				ActorProperties.Add(MakeShareable(new SSearchableDropdownWidget<FString>::FDropdownItem(Property->GetName(), Property->GetDisplayNameText().ToString())));
 			}
 		}

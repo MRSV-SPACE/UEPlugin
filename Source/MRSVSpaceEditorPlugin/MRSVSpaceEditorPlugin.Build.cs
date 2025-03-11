@@ -26,7 +26,7 @@ public class MRSVSpaceEditorPlugin : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "SlateCore", "PropertyEditor", "ToolWidgets", "MediaAssets", "MRSVSpaceMetadata", "Json"
+				"Core", "SlateCore", "PropertyEditor", "ToolWidgets", "MediaAssets", "MRSVSpaceMetadata", "Json", "JsonUtilities"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

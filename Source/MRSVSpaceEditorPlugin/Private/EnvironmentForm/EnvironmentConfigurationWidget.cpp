@@ -3,7 +3,7 @@
 
 #include "ConfigurationDataHandler.h"
 #include "EnvironmentForm/ControlListFormWidget.h"
-#include "EnvironmentForm/PresetConfigurationWidget.h"
+#include "EnvironmentForm/PreviewImageListWidget.h"
 #include "EnvironmentForm/PresetListFormWidget.h"
 #include "HelperWidgets/StaticConfigurationInput.h"
 #include "HelperWidgets/StringSetInputWidget.h"
@@ -14,6 +14,8 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 	// Get parameters
 	EnvironmentData = InArgs._EnvironmentData;
 	OnSaveDelegate = InArgs._OnSave;
+	DefaultControls = InArgs._DefaultControls;
+	
 	//Construct basic view
 	ChildSlot
 	.Padding(5.0f)
@@ -89,6 +91,7 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 						//New String set input widget
 						SNew(SStringSetInputWidget)
 						.StringList(&EnvironmentData->Tags)
+						.IsDefault(false)
 					]
 				]
 				+ SVerticalBox::Slot()
@@ -127,6 +130,16 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 						]
 					]
 				]
+				+SVerticalBox::Slot()
+				.AutoHeight()
+				[
+					SNew(SStaticConfigurationInput)
+					.LabelText(FText::FromString("Preview image"))
+					[
+						SNew(SPreviewImageListWidget)
+						.PreviewImagesList(&EnvironmentData->Previews)
+					]
+				]
 			]
 			/* Configuration PopUp Buttons */
 			+ SVerticalBox::Slot()
@@ -138,7 +151,7 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 				.Text(FText::FromString("Configure Controls"))
 				.OnClicked_Lambda([this]()
 				{
-					SControlListFormWidget::ShowAsPopup(&EnvironmentData->Controls, FText::FromString("Environment Controls"));
+					SControlListFormWidget::ShowAsPopup(&EnvironmentData->Controls, &*DefaultControls,FText::FromString("Environment Controls"));
 					return FReply::Handled();
 				})
 			]
@@ -153,7 +166,7 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 				.Text(FText::FromString("Configure Presets"))
 				.OnClicked_Lambda([this]()
 				{
-					SPresetListFormWidget::ShowAsPopup(&EnvironmentData->Presets, &EnvironmentData->Controls, FText::FromString("Environment Presets"));
+					SPresetListFormWidget::ShowAsPopup(&EnvironmentData->Presets, &EnvironmentData->Controls,FText::FromString("Environment Presets"));
 					return FReply::Handled();
 				})
 			]

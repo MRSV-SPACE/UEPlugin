@@ -22,16 +22,14 @@ public:
 	void Construct(const FArguments& InArgs);
 
 private:
-	/*
+	/**
 	 * Name/value of the tag
 	 */
 	FString TagName;
-	
 	/**
 	 * The callback delegate to remove the current control
 	 */
 	FOnRemoveCallback RemoveCallback;
-	
 	/**
 	 * Function to handle when the remove button is clicked
 	 *

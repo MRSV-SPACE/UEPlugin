@@ -1,0 +1,98 @@
+{
+    "controls": [
+		{
+			"id": "time-of-day",
+			"name": "Time Of Day",
+			"type": "SLIDER_FREE_HORIZONTAL",
+			"action":
+			{
+				"type": "ACTOR",
+				"actor": "",
+				"property": ""
+			},
+			"details":
+			{
+				"min": 0,
+				"max": 2400,
+				"options": [
+				],
+				"controls": []
+			},
+			"isDefault": true
+		},
+        {
+			"id": "weather-type",
+			"name": "Weather Type",
+			"type": "CHOICE",
+			"action":
+			{
+				"type": "ACTOR",
+				"actor": "",
+				"property": ""
+			},
+			"details":
+			{
+				"min": 0,
+				"max": 0,
+				"options": [
+					"Cloud",
+					"Rain",
+					"Snow",
+					"Storm",
+					"Sun"
+				],
+				"defaultOptions":
+				[
+					"Cloud",
+					"Rain",
+					"Snow",
+					"Storm",
+					"Sun"
+				],
+				"controls": []
+			},
+			"isDefault": true
+		},
+        {
+			"id": "weather-intensity",
+			"name": "Weather Intensity",
+			"type": "SLIDER_FREE_HORIZONTAL",
+			"action":
+			{
+				"type": "ACTOR",
+				"actor": "",
+				"property": ""
+			},
+			"details":
+			{
+				"min": 0,
+				"max": 100,
+				"options": [
+				],
+				"controls": []
+			},
+			"isDefault": true
+		},
+        {
+			"id": "volume",
+			"name": "Volume",
+			"type": "SLIDER_FREE_VERTICAL",
+			"action":
+			{
+				"type": "ACTOR",
+				"actor": "",
+				"property": ""
+			},
+			"details":
+			{
+				"min": 0,
+				"max": 100,
+				"options": [
+				],
+				"controls": []
+			},
+			"isDefault": true
+		}
+		
+	]
+}

@@ -9,6 +9,9 @@ void SDynamicControlDetailsForm::Construct(const FArguments& InArgs)
 {
 	//Get params
 	ControlDetails = InArgs._ControlDetails.Get();
+	IsDefault = InArgs._IsDefault;
+
+	
 	//Create view
 	ChildSlot
 	[
@@ -51,7 +54,7 @@ void SDynamicControlDetailsForm::Construct(const FArguments& InArgs)
 					})
 					.AllowSpin(true)
 					.OnValueChanged_Lambda([this](double NewValue)
-					{
+					{	
 						ControlDetails->Max = NewValue;
 					})
 				]
@@ -74,6 +77,8 @@ void SDynamicControlDetailsForm::Construct(const FArguments& InArgs)
 					//String set input widget
 					SNew(SStringSetInputWidget)
 					.StringList(&ControlDetails->Options)
+					.IsDefault(IsDefault)
+					.DefaultOptionsList(&ControlDetails->DefaultOptions)
 				]
 			]
 		]

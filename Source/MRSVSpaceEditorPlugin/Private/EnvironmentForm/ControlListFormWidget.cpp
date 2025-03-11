@@ -6,7 +6,10 @@
 void SControlListFormWidget::Construct(const FArguments& InArgs)
 {
 	//Store params
+	DefaultControlsList = InArgs._DefaultControls;
+	numberOfDefault = DefaultControlsList->Num();
 	ControlList = InArgs._ControlList;
+	
 	//Construct view
 	ChildSlot
 	.Padding(10.0f)
@@ -63,9 +66,9 @@ FReply SControlListFormWidget::AddPropertyConfigurationForm() const
 	[
 		SNew(SControlConfigurationWidget)
 		.ControlData(CurrentControl)
+		.isDefault(false)
 		.OnRemove_Lambda([this, CurrentControl](TSharedRef<SWidget> FormWidget) {
-			//Remove item in the control list
-			// This needs to be done this way because when using any of the remove function it makes UE crash (not related to the remove function itself)
+			// Remove item in control list
 			TArray<FControl> NewControls;
 			for (FControl& TempControl : *ControlList)
 			{
@@ -74,9 +77,10 @@ FReply SControlListFormWidget::AddPropertyConfigurationForm() const
 					NewControls.Add(TempControl);
 				}
 			}
-
+			
 			ControlList->Empty();
 			ControlList->Append(NewControls);
+			
 			// Remove widget
 			PropertyConfigFormContainer->RemoveSlot(FormWidget);
 		})
@@ -90,11 +94,31 @@ FReply SControlListFormWidget::AddPropertyConfigurationForm() const
 	return FReply::Handled();
 }
 
+TSharedRef<SControlListFormWidget> SControlListFormWidget::ShowAsPopup(TArray<FControl>* InitalList, TArray<FControl>* DefaultControlsList, FText PopUpTitle, FVector2D PopUpSize)
+{
+	//Create widget
+	TSharedRef<SControlListFormWidget> PopupContent = SNew(SControlListFormWidget)
+		.ControlList(InitalList)
+		.DefaultControls(DefaultControlsList);
+	//Create popup window
+	FSlateApplication::Get().AddWindow(
+		SNew(SWindow)
+		.Title(PopUpTitle)
+		.ClientSize(PopUpSize)
+		.SizingRule(ESizingRule::UserSized)
+		[
+			PopupContent
+		]);
+	//Return Ref to Content
+	return PopupContent;
+}
+
 TSharedRef<SControlListFormWidget> SControlListFormWidget::ShowAsPopup(TArray<FControl>* InitalList, FText PopUpTitle, FVector2D PopUpSize)
 {
 	//Create widget
 	TSharedRef<SControlListFormWidget> PopupContent = SNew(SControlListFormWidget)
-		.ControlList(InitalList);
+		.ControlList(InitalList)
+		.DefaultControls(nullptr);
 	//Create popup window
 	FSlateApplication::Get().AddWindow(
 		SNew(SWindow)
@@ -117,6 +141,41 @@ void SControlListFormWidget::ReloadForm() const
 void SControlListFormWidget::AddExistingControls() const
 {
 	uint64 counter = 0;
+
+	//Checks if the default controls are all in the list of controls
+	bool bContainsAllDefaults = true;
+	for (const FControl& DefaultControl : *DefaultControlsList)
+	{
+		if (!ControlList->Contains(DefaultControl))
+		{
+			bContainsAllDefaults = false;
+			break; 
+		}
+	}
+	//If the default controls aren't all in the list, recreate the list with first the default controls then the user controls
+	if (!bContainsAllDefaults)
+	{
+		TArray<FControl>* AllControls = new TArray<FControl>();
+		AllControls->Append(*DefaultControlsList);
+		AllControls->Append(*ControlList);
+	
+		ControlList-> Empty();
+		ControlList-> Append(*AllControls);
+		AllControls = nullptr;
+	}
+	else
+	{
+		//Set the first controls of the list to default based on the number of default controls
+		//(If there's 5 default controls, then the 5 first controls are set to default)
+		for (FControl& Control : *ControlList)
+		{
+			Control.IsDefault = (counter < numberOfDefault);
+			counter++;
+
+		}
+	}
+	
+	//Creates all the controls visually
 	for (FControl& Control : *ControlList)
 	{
 		PropertyConfigFormContainer->AddSlot()
@@ -124,6 +183,7 @@ void SControlListFormWidget::AddExistingControls() const
 		[
 			SNew(SControlConfigurationWidget)
 			.ControlData(&Control)
+			.isDefault(Control.IsDefault)
 			.OnRemove_Lambda([this, Control](TSharedRef<SWidget> FormWidget) {
 				// Remove item in control list
 				TArray<FControl> NewControls;
@@ -142,6 +202,6 @@ void SControlListFormWidget::AddExistingControls() const
 				PropertyConfigFormContainer->RemoveSlot(FormWidget);
 			})
 		];
-		counter++;
 	}
 }
+

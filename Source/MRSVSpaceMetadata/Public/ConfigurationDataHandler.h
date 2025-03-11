@@ -15,7 +15,7 @@ public:
 	 * @param InPath The file path to the storage metadata file
 	 */
 	ConfigurationDataHandler(FString InPath);
-	
+
 	/**
 	 * Loads the metadata from storage
 	 */
