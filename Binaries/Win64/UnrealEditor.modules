@@ -1,0 +1,9 @@
+{
+	"BuildId": "33043543",
+	"Modules": 
+	{
+		"MRSVSpaceComponents": "UnrealEditor-MRSVSpaceComponents.dll",
+		"MRSVSpaceEditorPlugin": "UnrealEditor-MRSVSpaceEditorPlugin.dll",
+		"MRSVSpaceMetadata": "UnrealEditor-MRSVSpaceMetadata.dll"
+	}
+}
