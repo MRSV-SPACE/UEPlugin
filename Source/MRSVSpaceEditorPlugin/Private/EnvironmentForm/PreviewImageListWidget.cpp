@@ -74,7 +74,7 @@ void SPreviewImageListWidget::UpdatePreviewImageText(FString ScreenshotPath)
 	
 	// Change the path in the TextBlock and adds it to the list
 	PreviewImagePath->SetText(FText::FromString(fullName));
-	PreviewImagesList->Add(ImagePath);
+	PreviewImagesList->Add("PreviewImages/DefaultPreviewImage.jpg");
 }
 
 /**

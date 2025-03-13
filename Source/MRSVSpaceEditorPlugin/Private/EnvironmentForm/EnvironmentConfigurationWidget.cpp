@@ -171,5 +171,6 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 				})
 			]
 	];
+
 }
 
