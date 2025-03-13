@@ -40,4 +40,16 @@ private:
 	 * The default font style
 	 */
 	FSlateFontInfo DefaultFont = FCoreStyle::GetDefaultFontStyle("Regular", 10);
+
+	/**
+	 * 
+	 */
+	TSharedPtr<STextBlock> SaveStateText;
+	
+	/**
+	 * 
+	 */
+	void ChangeSaveStateText(bool SaveState);
+
+	EActiveTimerReturnType HandleHideTextTimer(double InCurrentTime, float InDeltaTime);
 };

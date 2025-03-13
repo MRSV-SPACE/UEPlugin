@@ -36,8 +36,8 @@ void SPreviewImageListWidget::Construct(const FArguments& InArgs)
 	//Checks if an image already exist in the list 
 	if (PreviewImagesList->Num() > 0)
 	{
-		//Set the path to last item of the list 
-		PreviewImagePath->SetText(FText::FromString(PreviewImagesList->Last()));		
+		//Set the path to last item of the list
+		UpdatePreviewImageText("Saved/MRSV/" + PreviewImagesList->Last());
 	}
 }
 /*

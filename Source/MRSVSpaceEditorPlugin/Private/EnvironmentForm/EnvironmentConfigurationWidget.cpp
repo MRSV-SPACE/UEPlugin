@@ -53,10 +53,20 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 					{
 						if(OnSaveDelegate.ExecuteIfBound())
 						{
+							ChangeSaveStateText(true);
 							return FReply::Handled();
 						}
+						ChangeSaveStateText(false);
 						return FReply::Unhandled();
 					})
+				]
+				+SHorizontalBox::Slot()
+				.HAlign(HAlign_Right)
+				.VAlign(VAlign_Center)
+				.Padding(5.0f, 0.0f)
+				.AutoWidth()
+				[
+					SAssignNew(SaveStateText, STextBlock)
 				]
 			]
 			/* STATIC INPUTS */
@@ -149,6 +159,7 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 			[
 				SNew(SButton)
 				.Text(FText::FromString("Configure Controls"))
+				.ToolTipText(FText::FromString("Configure Controls for the environment. Note : Controls are temporarily saved in the plugin when closing the form"))
 				.OnClicked_Lambda([this]()
 				{
 					SControlListFormWidget::ShowAsPopup(&EnvironmentData->Controls, &*DefaultControls,FText::FromString("Environment Controls"));
@@ -164,6 +175,7 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 			[
 				SNew(SButton)
 				.Text(FText::FromString("Configure Presets"))
+				.ToolTipText(FText::FromString("Configure Presets based on the controls for the environment. Note : Presets are temporarily saved in the plugin when closing the form"))
 				.OnClicked_Lambda([this]()
 				{
 					SPresetListFormWidget::ShowAsPopup(&EnvironmentData->Presets, &EnvironmentData->Controls,FText::FromString("Environment Presets"));
@@ -174,3 +186,23 @@ void SEnvironmentConfigurationWidget::Construct(const FArguments& InArgs)
 
 }
 
+void SEnvironmentConfigurationWidget::ChangeSaveStateText(bool SaveState)
+{
+	if (SaveState)
+	{
+		SaveStateText->SetText(FText::FromString("Saved !"));
+		SaveStateText->SetColorAndOpacity(FSlateColor(FLinearColor::Green));
+	}
+	else
+	{
+		SaveStateText->SetText(FText::FromString("NOT Saved !"));
+		SaveStateText->SetColorAndOpacity(FSlateColor(FLinearColor::Red));
+	}
+	RegisterActiveTimer(5.0f, FWidgetActiveTimerDelegate::CreateSP(this, &SEnvironmentConfigurationWidget::HandleHideTextTimer));
+}
+
+EActiveTimerReturnType SEnvironmentConfigurationWidget::HandleHideTextTimer(double InCurrentTime, float InDeltaTime)
+{
+	SaveStateText->SetText(FText::FromString(""));
+	return EActiveTimerReturnType::Stop;
+}
